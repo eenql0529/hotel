@@ -37,6 +37,8 @@ public class Reservation {
 	
 	private LocalDateTime checkOutDate;
 	
+	private int count;
+	
 	@Enumerated(EnumType.STRING)
 	private ReservationStatus rsStatus;
 	
