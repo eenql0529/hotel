@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout1}">
+	
+<!-- 각 페이지의 CSS가 작성될 위치 -->
+<th:block layout:fragment="css">
+	<style>
+.login1{
+	margin-bottom: 80px;
+}
+
+.login2{
+	display: flex;flex-direction: column;align-items: center;align-content: center;
+}
+
+.login3{
+	width: 700px;
+}
+.login4{
+	text-align: center;border-bottom: inset;margin-bottom:10px;
+}
+
+.login5{
+	margin-bottom: 50px; text-align:center;
+}
+.login6{
+	width: 500px;
+}
+.login7{
+	display: flex;flex-direction: column;align-items: center;
+}
+.login8{
+	display: flex !important;flex-direction: row !important;font-size: 14px !important;align-items: center !important;align-self: flex-start !important;margin-left: 90px !important;
+}
+.login9{
+	width: 12px !important;margin-bottom: 0 !important;margin-right: 5px !important;
+}
+.login10{
+	display: flex;flex-direction: column;align-items: center; margin-right: 10px;
+}
+.login11{
+	display: flex;flex-direction: column;align-items: center;
+}
+
+
+	</style>
+</th:block>	
+	
+	
+<div layout:fragment="content">
+<section class="contact-section spad">
+        <div class="container login1" >
+            <div class="row login2">
+                <div>
+                    <div class="contact-text login3" >
+                        <h2 class="login4" >LOGIN</h2>
+                        <p class="login5">가입하신 이메일과 비밀번호를 정확히 입력해 주세요.</p>
+                        
+
+                    </div>
+                </div>
+                <div  class="login6">
+                    <form role="form" action="/members/login" method="post" class="contact-form">
+                        <div class="row login7"  >
+                            <div>
+                                <label th:for="email" class="text-black"></label><input id="email" type="email" name="email" placeholder="이메일을 입력해주세요" style="width: 350px;">
+                            </div>
+                            <div>
+                                <label th:for="password" class="text-black"></label><input id="password" name="password" type="password" placeholder="비밀번호를 입력해주세요" style="width: 350px;margin-bottom: 10px;">
+                            </div>
+                            <label class="disB login8">
+                            <input class="login9" type="checkbox" name="id_save" id="id_save" value="Y" > 이메일 저장
+                            </label>
+                            <p th:if="${loginErrorMsg}" class="error" th:text="${loginErrorMsg}"></p>
+                            <div style="display: flex;margin-top: 20px;">
+                            	<div class="login10">
+                                	<button id="loginbtn" type="submit" style="width: 170px;" class="memberForm">로그인</button>
+                            	</div>
+                            	<div class="login11">
+                                	<button type="button" onclick="location.href='/members/signUp'"  style="width: 170px;text-align: center;" class="memberForm">회원가입
+                              		</button>
+                            	</div>
+                            </div>
+                        </div>
+                  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+<th:block layout:fragment="script">
+	<script type="text/javascript" th:src="@{/js/cookie.js}"></script>
+	<script th:inline="javascript">
+		$(document).ready(function(){
+			var userInputId = getCookie("userInputId"); //쿠키값(이메일주소)을 가져온다.
+			var setCookieYN = getCookie("setCookieYN"); //쿠키값(이메일 저장 여부)을 가져온다.
+			
+			if(setCookieYN == 'Y') { //이메일 저장 여부가 Y면
+				$("#id_save").prop("checked", true); //이메일 저장 체크박스를 체크한다
+				$("#email").val(userInputId); //이메일 input창에는 쿠키에서 가져온 이메일 주소를 넣는다.
+			} else {
+				$("#id_save").prop("checked", false);
+			}
+			
+			
+			//로그인 버튼 클릭시 쿠키에 이메일 저장여부, 이메일 저장
+			$("#loginbtn").click(function(){
+				
+				if($("#id_save").is(":checked")) { //이메일 저장에 체크가 되어있다면
+					var userInputId = $("#email").val(); //이메일 값을 가지고 온다.
+					
+					//쿠키 생성
+					setCookie("userInputId", userInputId, 60); //이메일 저장
+					setCookie("setCookieYN", "Y", 60); //이메일 저장여부 저장
+				} else {
+					//쿠키 삭제
+					deleteCookie("userInputId");
+					deleteCookie("setCookieYN");
+				}
+				
+			});
+		});
+	</script>
+</th:block>
+
+</html>

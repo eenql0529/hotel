@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout1}">
+<head>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+</head>
+
+<th:block layout:fragment="css">
+	<style>
+.content {
+	font-family: suit !important;
+}
+
+.roomMng_button {
+	background-color: #DFA974 !important;
+	width: 100px;
+	color: white;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-weight: bolder;
+	margin-bottom: 6px;
+	font-size: 14px;
+	text-transform: uppercase;
+	border: 1px solid #dfa974;
+	border-radius: 2px;
+	background: transparent;
+	height: 46px;
+	margin-top: 30px;
+}
+</style>
+</th:block>
+
+<div layout:fragment="content">
+	<div class="breadcrumb-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="breadcrumb-text">
+						<h2 style="font-family: suit !important;">객실 관리</h2>
+						<div class="bt-option">
+							<a href="/">Home</a> <span>Rooms</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Breadcrumb Section End -->
+	<div class="container"
+		style="display: flex; justify-content: flex-end; padding: 0px;">
+		<a class="roomMng_button" href="/admin/room/new">ADD ROOM</a>
+	</div>
+	<!-- Rooms Section Begin -->
+	<section class="rooms-section spad">
+		<form method="get" th:object="${roomType}">
+			<div class="container">
+				<div>
+					<div class="row" th:each="room, status: ${roomType}"
+						style="align-items: center; margin-bottom: 30px; border: solid 0.1px; border-color: #8f8f8f73; border-radius: 0.25rem !important;">
+						<div class="col-4" style="padding-left: 0;">
+							<img th:src="${room.imgUrl}" class="rounded repImg">
+						</div>
+						<div class="col-6">
+
+							<p>
+								<strong>객실타입:</strong> <span th:text="${room.typeName}"></span>
+							</p>
+							<p>
+								<strong>위치:</strong> <span th:text="${room.location}"></span>
+							</p>
+							<p>
+								<strong>전망:</strong> <span th:text="${room.view}"></span>
+							</p>
+							<p>
+								<strong>가격:</strong> <span>[[${#numbers.formatInteger(room.price,
+									0, 'COMMA')}]]원</span>
+							</p>
+							<!-- 등등 필요한 정보를 추가 -->
+						</div>
+						<div class="col-2">
+							<a class="roomMng_button" th:href="'/admin/room/' + ${room.id}">UPDATE
+								ROOM</a> <a th:value="${room.id}"
+								th:onclick="deleteRoomType([[${room.id}]])"
+								class="roomMng_button" style="color: white; cursor: pointer;">
+								DELETE ROOM</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</section>
+</div>
+<!-- Rooms Section End -->
+<th:block layout:fragment="script">
+	<script th:inline="javascript">
+		function deleteRoomType(typeId) {
+			const deleteConf = confirm("삭제하시겠습니까?");
+			if (!deleteConf)
+				return; //취소버튼 누르면
+
+			//request URL
+			var url = "/room/delete/" + typeId;
+
+			var token = $("meta[name='_csrf']").attr("content");
+			var header = $("meta[name='_csrf_header']").attr("content");
+
+			$.ajax({
+				url : url, //request URL
+				type : "DELETE", //전송방식
+				contentType : "application/json",
+				beforeSend : function(xhr) {
+					//데이터를 전송하기 전에 헤더에 csrf 값을 설정
+					xhr.setRequestHeader(header, token);
+				},
+				dataType : "json",
+				cache : false,
+				success : function(result, status) {
+					location.href = '/admin/room';
+				}
+
+			});
+		}
+	</script>
+</th:block>
+
+</html>

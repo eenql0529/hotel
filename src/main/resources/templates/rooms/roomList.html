@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout1}">
+
+<th:block layout:fragment="css">
+<style>
+.contents {
+font-family: 'SUIT'  !important;
+    font-weight: 500 !important;
+    font-size: 17px !important;
+}
+</style>
+</th:block>
+<div layout:fragment="content">
+    <div class="breadcrumb-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-text">
+                        <h2>Our Rooms</h2>
+                        <div class="bt-option">
+                            <a href="/">Home</a>
+                            <span>Rooms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Rooms Section Begin -->
+    <section class="rooms-section spad">
+        <div class="container contents">
+            <div class="row">
+                <div class="col-lg-4 col-md-6" th:each="room : ${roomTypeList}">
+                    <div class="room-item">
+                        <img th:src="${room.imgUrl}" alt="">
+                        <div class="ri-text">
+                            <h4 th:text="${room.typeName}"style="font-family: 'SUIT'  !important;">Premium King Room</h4>
+                            <h3 th:text="${room.comment}"
+                            style="font-family: 'SUIT'  !important;font-weight: 500 !important;font-size: 17px !important;"></h3>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td class="r-o" style="font-family: 'SUIT'  !important;">전망:</td>
+                                        <td th:text="${room.view}" style="font-family: 'SUIT'  !important;">Wifi, Television, Bathroom,...</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="r-o" style="font-family: 'SUIT'  !important;">침대:</td>
+                                        <td th:text="${room.bedType}" style="font-family: 'SUIT'  !important;">King Beds</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="r-o" style="font-family: 'SUIT'  !important;">객실크기:</td>
+                                        <td th:text="${room.roomSize}" style="font-family: 'SUIT'  !important;">30 ft</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <a th:href="'/rooms/' + ${room.id}" class="primary-btn" style="font-family: 'SUIT'  !important;">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="room-pagination">
+                        <a href="#">1</a>
+                        <a href="#">2</a>
+                        <a href="#">Next <i class="fa fa-long-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Rooms Section End -->
+
+</div>
+
+</html>
