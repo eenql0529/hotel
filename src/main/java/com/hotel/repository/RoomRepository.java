@@ -23,5 +23,7 @@ public interface RoomRepository extends JpaRepository<RoomType, Long>,
 	List<RoomImgDto> getImgDtos();	
 	
 	
+	@Modifying
+	@Query(value = "select ")
 
 }

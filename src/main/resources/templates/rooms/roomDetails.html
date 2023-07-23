@@ -3,12 +3,27 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layouts/layout1}">
 
-	<meta name="_csrf" th:content="${_csrf.token}" />
-	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 
 <th:block layout:fragment="css">
 	<style>
-* {
+	
+.amenitiesDetail > ul {
+display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}	
+	
+.amenitiesDetail > ul > li{
+	max-width: 750px;
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+	
+.contents {
 	font-family: suit !important;
 }
 
@@ -59,7 +74,6 @@
 .amenitiesDetail>div>p {
 	text-align: center;
 } */
-
 html, body {
 	position: relative;
 	height: 100%;
@@ -175,91 +189,88 @@ body {
 							<div class="amenitiesTitle">
 								<p>Amenities</p>
 							</div>
-							<div>
-								<div class="amenitiesDetail">
-									<div th:utext="${rooms.amenities}"></div>
 
-									</div>
-								</div>
-							</div>
-						</div>
+							<div class="amenitiesDetail" th:utext="${rooms.amenities}"
+								style="display: flex; flex-direction: row;"></div>
 
-						<div class="a_notice">
-							※ 모든 고객의 편안한 휴식을 위하여 전 객실 금연입니다.<br> ※ 객실에서 흡연 시(IQOS담배,
-							전자담배 포함) 10만원의 과태료가 부과됩니다.<br> ※ 객실내 애완동물의 출입 및 동반 투숙이 불가
-							합니다.<br> ※ 화재 예방을 위하여 객실 내에서는 촛불, 가스, 유류 등의 인화성 물질과 난방/취사를
-							위한 화기 및 전열기구에 대한 일체 사용을 엄격히 금지합니다.<br>
-							<!--※ LED형 초는 컨시어지에서 대여 가능하오니 사전 문의(컨시어지:032-743-9120) 주시기 바랍니다.<br/>-->
-							※ 고객님 편의를 위해 생수 1병을 추가로 무료 제공합니다.<br> ※ 전 객실에 손소독제 및 소독솜 등을
-							무료로 제공합니다.<br> ※ 네스트 킷 구성 : 렌즈&amp;스마트폰 클리닝 티슈, 소독솜, 일회용 밴드<br>(LENS
-							&amp; SMARTPHONE CLEANING TISSUE / ALCOHOL SWAB / DISPOSABLE
-							BAND)<br>
-
-						</div>
-						<div class="rd-reviews">
-							<h4>Reviews</h4>
-							<div class="review-item">
-								<div class="ri-pic">
-									<img src="img/room/avatar/avatar-1.jpg" alt="">
-								</div>
-								<div class="ri-text">
-									<span>27 Aug 2019</span>
-									<div class="rating">
-										<i class="icon_star"></i> <i class="icon_star"></i> <i
-											class="icon_star"></i> <i class="icon_star"></i> <i
-											class="icon_star-half_alt"></i>
-									</div>
-									<h5>Brandon Kelley</h5>
-									<p>Neque porro qui squam est, qui dolorem ipsum quia dolor
-										sit amet, consectetur, adipisci velit, sed quia non numquam
-										eius modi tempora. incidunt ut labore et dolore magnam.</p>
-								</div>
-							</div>
-							<div class="review-item">
-								<div class="ri-pic">
-									<img src="img/room/avatar/avatar-2.jpg" alt="">
-								</div>
-								<div class="ri-text">
-									<span>27 Aug 2019</span>
-									<div class="rating">
-										<i class="icon_star"></i> <i class="icon_star"></i> <i
-											class="icon_star"></i> <i class="icon_star"></i> <i
-											class="icon_star-half_alt"></i>
-									</div>
-									<h5>Brandon Kelley</h5>
-									<p>Neque porro qui squam est, qui dolorem ipsum quia dolor
-										sit amet, consectetur, adipisci velit, sed quia non numquam
-										eius modi tempora. incidunt ut labore et dolore magnam.</p>
-								</div>
-							</div>
-						</div>
-						<div class="review-add">
-							<h4>Add Review</h4>
-							<form action="#" class="ra-form">
-								<div class="row">
-									<div class="col-lg-6">
-										<input type="text" placeholder="Name*">
-									</div>
-									<div class="col-lg-6">
-										<input type="text" placeholder="Email*">
-									</div>
-									<div class="col-lg-12">
-										<div>
-											<h5>You Rating:</h5>
-											<div class="rating">
-												<i class="icon_star"></i> <i class="icon_star"></i> <i
-													class="icon_star"></i> <i class="icon_star"></i> <i
-													class="icon_star-half_alt"></i>
-											</div>
-										</div>
-										<textarea placeholder="Your Review"></textarea>
-										<button type="submit">Submit Now</button>
-									</div>
-								</div>
-							</form>
 						</div>
 					</div>
-									<div class="col-lg-4">
+
+					<div class="a_notice">
+						※ 모든 고객의 편안한 휴식을 위하여 전 객실 금연입니다.<br> ※ 객실에서 흡연 시(IQOS담배, 전자담배
+						포함) 10만원의 과태료가 부과됩니다.<br> ※ 객실내 애완동물의 출입 및 동반 투숙이 불가 합니다.<br>
+						※ 화재 예방을 위하여 객실 내에서는 촛불, 가스, 유류 등의 인화성 물질과 난방/취사를 위한 화기 및 전열기구에 대한
+						일체 사용을 엄격히 금지합니다.<br>
+						<!--※ LED형 초는 컨시어지에서 대여 가능하오니 사전 문의(컨시어지:032-743-9120) 주시기 바랍니다.<br/>-->
+						※ 고객님 편의를 위해 생수 1병을 추가로 무료 제공합니다.<br> ※ 전 객실에 손소독제 및 소독솜 등을
+						무료로 제공합니다.<br> ※ 네스트 킷 구성 : 렌즈&amp;스마트폰 클리닝 티슈, 소독솜, 일회용 밴드<br>(LENS
+						&amp; SMARTPHONE CLEANING TISSUE / ALCOHOL SWAB / DISPOSABLE BAND)<br>
+
+					</div>
+					<div class="rd-reviews">
+						<h4>Reviews</h4>
+						<div class="review-item">
+							<div class="ri-pic">
+								<img src="img/room/avatar/avatar-1.jpg" alt="">
+							</div>
+							<div class="ri-text">
+								<span>27 Aug 2019</span>
+								<div class="rating">
+									<i class="icon_star"></i> <i class="icon_star"></i> <i
+										class="icon_star"></i> <i class="icon_star"></i> <i
+										class="icon_star-half_alt"></i>
+								</div>
+								<h5>Brandon Kelley</h5>
+								<p>Neque porro qui squam est, qui dolorem ipsum quia dolor
+									sit amet, consectetur, adipisci velit, sed quia non numquam
+									eius modi tempora. incidunt ut labore et dolore magnam.</p>
+							</div>
+						</div>
+						<div class="review-item">
+							<div class="ri-pic">
+								<img src="img/room/avatar/avatar-2.jpg" alt="">
+							</div>
+							<div class="ri-text">
+								<span>27 Aug 2019</span>
+								<div class="rating">
+									<i class="icon_star"></i> <i class="icon_star"></i> <i
+										class="icon_star"></i> <i class="icon_star"></i> <i
+										class="icon_star-half_alt"></i>
+								</div>
+								<h5>Brandon Kelley</h5>
+								<p>Neque porro qui squam est, qui dolorem ipsum quia dolor
+									sit amet, consectetur, adipisci velit, sed quia non numquam
+									eius modi tempora. incidunt ut labore et dolore magnam.</p>
+							</div>
+						</div>
+					</div>
+					<div class="review-add">
+						<h4>Add Review</h4>
+						<form action="#" class="ra-form">
+							<div class="row">
+								<div class="col-lg-6">
+									<input type="text" placeholder="Name*">
+								</div>
+								<div class="col-lg-6">
+									<input type="text" placeholder="Email*">
+								</div>
+								<div class="col-lg-12">
+									<div>
+										<h5>You Rating:</h5>
+										<div class="rating">
+											<i class="icon_star"></i> <i class="icon_star"></i> <i
+												class="icon_star"></i> <i class="icon_star"></i> <i
+												class="icon_star-half_alt"></i>
+										</div>
+									</div>
+									<textarea placeholder="Your Review"></textarea>
+									<button type="submit">Submit Now</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="col-lg-4">
 					<div class="room-booking">
 						<h3>Your Reservation</h3>
 						<form action="#">
@@ -281,15 +292,17 @@ body {
 								</select>
 							</div>
 
-							<button type="button" onclick="order()">Check Availability</button>
-							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+							<button type="button" onclick="order()">Check
+								Availability</button>
+							<input type="hidden" th:name="${_csrf.parameterName}"
+								th:value="${_csrf.token}">
 						</form>
 					</div>
 
 				</div>
-				</div>
-
 			</div>
+
+		</div>
 	</section>
 	<!-- Room Details Section End -->
 
@@ -311,8 +324,7 @@ body {
 			mousewheel : true,
 			keyboard : true,
 		});
-		
-		
+
 		function order() {
 			var token = $("meta[name='_csrf']").attr("content");
 			alert('111111111');
@@ -322,13 +334,13 @@ body {
 			alert('33333333333');
 			//controller(서버)에 전달할 데이터
 			var paramData = {
-					itemId : $("#typeId").val(), //item의 id
+				itemId : $("#typeId").val(), //item의 id
 
 			}
-			
+
 			//★전달하기 전에 데이터를 반드시 JSON -> 문자열로 만들어야 한다.
 			var param = JSON.stringify(paramData);
-			
+
 			$.ajax({
 				url : url, //request URL
 				type : "POST", //전송방식
@@ -350,14 +362,12 @@ body {
 						location.href = '/members/login';
 					} else {
 						//에러메세지 출력(ResponseEntity에서 받아온 값을 출력해준다)
-						alert(jqXHR.responseText); 
+						alert(jqXHR.responseText);
 					}
 				}
 			});
-			
+
 		}
-			
-		
 	</script>
 </th:block>
 </html>
