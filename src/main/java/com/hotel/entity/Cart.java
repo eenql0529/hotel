@@ -36,6 +36,6 @@ public class Cart {
 	private Member member;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="room_id")
-	private Room room;
+	@JoinColumn(name="type_id")
+	private RoomType typeId;
 }

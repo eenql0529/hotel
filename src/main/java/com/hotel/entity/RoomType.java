@@ -1,10 +1,14 @@
 package com.hotel.entity;
 
 
+import com.hotel.Exception.OutOfStockException;
+import com.hotel.constant.Availability;
 import com.hotel.dto.RoomFormDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -55,6 +59,12 @@ public class RoomType extends BaseEntity {
 	@Lob // clob과 같은 큰타입의 문자타입으로 컬럼을 만든다
 	@Column(nullable = false, columnDefinition = "longtext")
 	private String roomDetail;
+	
+	@Enumerated(EnumType.STRING)
+	private Availability availability;
+	
+	
+	private int stock = 5; //객실재고
 
 	
 	//roomType 엔티티 수정
@@ -71,6 +81,28 @@ public class RoomType extends BaseEntity {
 		this.comment = roomFormDto.getComment();
 		this.roomDetail = roomFormDto.getRoomDetail();
 		
+		
+	}
+
+	
+	
+	
+	
+	
+	
+	//재고감소
+	public void removeStock() {
+		int restStock = this.stock - 1 ; //남은 재고 수량
+		
+		if(restStock <0) {
+			throw new OutOfStockException("빈 객실이 없습니다.");
+		}
+		this.stock = restStock;  //남은 재고 반영
+	}
+	
+	//재고증가
+	public void addStock() {
+		this.stock += 1;
 	}
 
 }

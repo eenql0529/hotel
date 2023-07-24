@@ -47,7 +47,8 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
 								roomImg.imgUrl,
 								roomType.comment,
 								roomType.location,
-								roomType.price
+								roomType.price,
+								roomType.availability
 								)
 						)
 				.from(roomImg)

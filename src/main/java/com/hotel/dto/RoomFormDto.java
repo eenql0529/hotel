@@ -7,7 +7,6 @@ import org.hibernate.mapping.Array;
 import org.modelmapper.ModelMapper;
 
 import com.hotel.constant.Availability;
-import com.hotel.entity.Room;
 import com.hotel.entity.RoomImg;
 import com.hotel.entity.RoomType;
 
@@ -50,7 +49,7 @@ public class RoomFormDto {
 	@NotBlank(message = "객실설명은 필수 입력입니다.")
 	private String roomDetail;
 	
-	
+	private Availability availability;
 	
 	private RoomImg imgId;
 	

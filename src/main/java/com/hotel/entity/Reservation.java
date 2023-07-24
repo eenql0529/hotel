@@ -37,7 +37,13 @@ public class Reservation {
 	
 	private LocalDateTime checkOutDate;
 	
+	private LocalDateTime ReserveDate;
+	
 	private int count;
+	
+	private int totalPrice;
+	
+	
 	
 	@Enumerated(EnumType.STRING)
 	private ReservationStatus rsStatus;
@@ -47,6 +53,41 @@ public class Reservation {
 	private Member member;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="room_id")
-	private Room room;
+	@JoinColumn(name="type_id")
+	private RoomType typeId;
+	
+	
+
+	
+	
+	public static Reservation createReserve(Member member,RoomType roomType, int count) {
+		Reservation reservation = new Reservation();
+		reservation.setMember(member);
+		reservation.setTypeId(roomType);
+		reservation.setCount(count);
+		reservation.setTotalPrice(roomType.getPrice());
+		reservation.setRsStatus(ReservationStatus.RESERVATION);
+		reservation.setReserveDate(LocalDateTime.now());
+
+		roomType.removeStock();
+		
+
+		
+		
+		return reservation;
+	}
+	
+
+	
+	
+	public int getTotalPrice(RoomType roomType) {
+		return totalPrice = roomType.getPrice() * count;
+	}
+	
+	//재고를 원래대로
+	public void cancel() {
+		this.getTypeId().addStock();
+	}
+	
+	
 }
