@@ -67,14 +67,7 @@ public class RoomController {
 	
 	
 	
-	@GetMapping(value ="/reserve/{id}" )
-	public String reserve(Model model, @PathVariable("id") Long typeId, Authentication authentication) {
 
-
-	    RoomFormDto roomFormDto = roomService.getRoomDtl(typeId);
-	    model.addAttribute("rooms", roomFormDto);
-	    return "reserve/reserve";
-	}
 	
 	
 //	//객실예약

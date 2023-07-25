@@ -18,7 +18,11 @@ public interface RoomImgRepository extends JpaRepository<RoomImg, Long> {
 	@Modifying
 	@Query(value = "select * from room_img where type_id = ?1 order by type_id asc", nativeQuery = true)
 	List<RoomImg> sae(Long typeId);
-//	
+
+
+
+	@Query(value = "select * from room_img where type_id = ?1 and repimg_yn = ?2", nativeQuery = true)
+	RoomImg findByTypeIdAndRepimgYn(Long typeId , String repimgYn);
 	
 
 }

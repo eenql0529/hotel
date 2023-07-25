@@ -30,7 +30,7 @@ public class RoomType extends BaseEntity {
 
 	@Id
 	@Column(name="type_id") //테이블로 생성될때 컬럼이름을 지정해준다
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String typeName; // 객실타입명
@@ -64,7 +64,7 @@ public class RoomType extends BaseEntity {
 	private Availability availability;
 	
 	
-	private int stock = 5; //객실재고
+	private int stock = 10; //객실재고
 
 	
 	//roomType 엔티티 수정

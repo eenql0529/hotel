@@ -1,5 +1,10 @@
 package com.hotel.dto;
 
+import java.time.LocalDateTime;
+
+import com.hotel.entity.Reservation;
+import com.hotel.entity.RoomType;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,10 +13,35 @@ import lombok.Setter;
 @Setter
 public class ReserveDto {
 	
-	@NotNull(message = "객실타입 아이디 필수")
 	private Long typeId;
 	
-	private int count;
+	private String typeName;
+	
+	private String imgUrl;
+	
+	private String checkIn;
+	
+	private String checkOut;
+	
+	private int guest;
+	
+	private LocalDateTime ReserveDate;
+	
+	private Long totalPrice;
+	
+	private Long count;
+
+	
+	//엔티티 -> Dto로 바꿔준다
+	public ReserveDto(Reservation reservation, String imgUrl) {
+		this.typeName = reservation.getTypeId().getTypeName();
+		this.count = reservation.getCount();
+		this.totalPrice =reservation.getTotalPrice();
+		this.imgUrl = imgUrl;
+	}
+	
+	
+
 	
 
 	

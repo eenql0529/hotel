@@ -26,7 +26,7 @@ public class Member {
 	
 	@Id
 	@Column(name="member_id") //테이블로 생성될때 컬럼이름을 지정해준다
-	@GeneratedValue(strategy = GenerationType.AUTO) //기본키를 자동으로 생성해주는 전략 사용(시퀀스랑 비슷)
+	@GeneratedValue(strategy = GenerationType.IDENTITY) //기본키를 자동으로 생성해주는 전략 사용(시퀀스랑 비슷)
 	private Long id;
 	
 	@Column(nullable = false)

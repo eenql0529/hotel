@@ -3,7 +3,10 @@ package com.hotel.entity;
 
 import java.time.LocalDateTime;
 
+import org.springframework.context.annotation.Configuration;
+
 import com.hotel.constant.ReservationStatus;
+import com.hotel.dto.ReserveDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,23 +29,25 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
+@Configuration
 public class Reservation {
 
 	@Id
 	@Column(name="reservation_id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	private LocalDateTime checkInDate;
+	private String checkIn;
 	
-	private LocalDateTime checkOutDate;
+	private String checkOut;
 	
-	private LocalDateTime ReserveDate;
+	private LocalDateTime reserveDate;
 	
-	private int count;
+	private Long count;
 	
-	private int totalPrice;
+	private Long totalPrice;
 	
+	private int guest;
 	
 	
 	@Enumerated(EnumType.STRING)
@@ -60,12 +65,15 @@ public class Reservation {
 
 	
 	
-	public static Reservation createReserve(Member member,RoomType roomType, int count) {
+	public Reservation createReserve(Member member,RoomType roomType, ReserveDto reserveDto) {
 		Reservation reservation = new Reservation();
 		reservation.setMember(member);
+		reservation.setCheckIn(reserveDto.getCheckIn());
+		reservation.setCheckOut(reserveDto.getCheckOut());
 		reservation.setTypeId(roomType);
-		reservation.setCount(count);
-		reservation.setTotalPrice(roomType.getPrice());
+		reservation.setCount(reserveDto.getCount());
+		reservation.setGuest(reserveDto.getGuest());
+		reservation.setTotalPrice((roomType.getPrice()*reserveDto.getCount() ));
 		reservation.setRsStatus(ReservationStatus.RESERVATION);
 		reservation.setReserveDate(LocalDateTime.now());
 
@@ -73,16 +81,12 @@ public class Reservation {
 		
 
 		
-		
 		return reservation;
 	}
 	
 
 	
-	
-	public int getTotalPrice(RoomType roomType) {
-		return totalPrice = roomType.getPrice() * count;
-	}
+
 	
 	//재고를 원래대로
 	public void cancel() {

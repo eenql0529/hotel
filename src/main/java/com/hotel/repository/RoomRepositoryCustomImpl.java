@@ -6,7 +6,10 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import com.hotel.dto.QRoomTypeListDto;
+import com.hotel.dto.ReserveDto;
 import com.hotel.dto.RoomTypeListDto;
+import com.hotel.entity.QMember;
+import com.hotel.entity.QReservation;
 import com.hotel.entity.QRoomImg;
 import com.hotel.entity.QRoomType;
 import com.hotel.entity.RoomType;
@@ -59,5 +62,5 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
 		
 		return content;
 	}
-
+	
 }
