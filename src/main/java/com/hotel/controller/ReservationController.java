@@ -3,6 +3,7 @@ package com.hotel.controller;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.hotel.dto.ReservationHistDto;
 import com.hotel.dto.ReserveDto;
 import com.hotel.dto.RoomFormDto;
+import com.hotel.entity.RoomType;
 import com.hotel.service.ReservationService;
 import com.hotel.service.RoomService;
 
@@ -99,21 +101,38 @@ public class ReservationController {
 	
 	
 	//예약내역 
-	@GetMapping(value = {"/check", "/check/{page}"})
+	@GetMapping(value = "/check")
 	public String reserveHist(Principal principal, Model model) {
 
 		//2. 서비스 호출
 		List<ReservationHistDto> reservationHistDtoList = 
 				reservationService.getReservationList(principal.getName());
-		//3. 서비스에서 가져온 값들을 view단에 model을 이용해 전송
+		
 
+		//3. 서비스에서 가져온 값들을 view단에 model을 이용해 전송
 
 		model.addAttribute("reservations", reservationHistDtoList);
 
-		//model.addAttribute("page", pageable.getPageNumber()); //현재페이지
-		
 		return "reserve/reserveList";
 	}
 	
+	
+	
+	//예약취소
+	@PostMapping("/reservation/{reservationId}/cancel")
+	public @ResponseBody ResponseEntity cancelReserve(@PathVariable("reservationId") Long reservationId
+				, Principal principal) {
+		//1. 본인확인
+		if(!reservationService.validateReserve(reservationId, principal.getName())) {
+				return new ResponseEntity<String>("예약 취소 권한이 없습니다.", HttpStatus.FORBIDDEN);
+				
+		}
+		
+		//2.주문취소
+		System.out.println(reservationId);
+		reservationService.cancelReserve(reservationId);
+		
+		return new ResponseEntity<Long>(reservationId, HttpStatus.OK); //성공했을때
+	}
 	
 }

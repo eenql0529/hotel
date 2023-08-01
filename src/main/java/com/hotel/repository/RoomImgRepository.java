@@ -24,5 +24,4 @@ public interface RoomImgRepository extends JpaRepository<RoomImg, Long> {
 	@Query(value = "select * from room_img where type_id = ?1 and repimg_yn = ?2", nativeQuery = true)
 	RoomImg findByTypeIdAndRepimgYn(Long typeId , String repimgYn);
 	
-
 }

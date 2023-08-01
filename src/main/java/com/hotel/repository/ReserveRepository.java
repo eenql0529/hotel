@@ -21,6 +21,10 @@ public interface ReserveRepository extends JpaRepository<Reservation, Long>{
 	//현재 로그인한 사용자의 주문 데이터를 페이징 조건에 맞춰서 조회
 	@Query("select o from Reservation o where o.member.email = :email order by o.reserveDate desc")
 	List<Reservation> findReservations(@Param("email") String email);
+
+	
+	@Query("SELECT r FROM Reservation r JOIN r.member m JOIN r.typeId rt WHERE m.email = :email ORDER BY r.reserveDate DESC")
+	List<Reservation> findReservations1(@Param("email") String email);
 	
 	//현재 로그인한 회원의 주문 개수가 몇개인지 조회(total)
 	

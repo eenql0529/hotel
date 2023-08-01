@@ -2,6 +2,8 @@ package com.hotel.entity;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
 
@@ -60,8 +62,7 @@ public class Reservation {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="type_id")
 	private RoomType typeId;
-	
-	
+
 
 	
 	
@@ -73,7 +74,7 @@ public class Reservation {
 		reservation.setTypeId(roomType);
 		reservation.setCount(reserveDto.getCount());
 		reservation.setGuest(reserveDto.getGuest());
-		reservation.setTotalPrice((roomType.getPrice()*reserveDto.getCount() ));
+		reservation.setTotalPrice(roomType.getPrice()*reserveDto.getCount());
 		reservation.setRsStatus(ReservationStatus.RESERVATION);
 		reservation.setReserveDate(LocalDateTime.now());
 
@@ -93,5 +94,15 @@ public class Reservation {
 		this.getTypeId().addStock();
 	}
 	
+	
+	//예약 취소
+	public void cancelReserve() {
+		this.rsStatus = ReservationStatus.CANCEL;
+		
+		//재고를 원래대로 돌려놓는다.
+		cancel();
+
+		
+	}
 	
 }

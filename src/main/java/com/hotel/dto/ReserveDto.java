@@ -2,6 +2,8 @@ package com.hotel.dto;
 
 import java.time.LocalDateTime;
 
+import org.modelmapper.ModelMapper;
+
 import com.hotel.entity.Reservation;
 import com.hotel.entity.RoomType;
 
@@ -30,18 +32,21 @@ public class ReserveDto {
 	private Long totalPrice;
 	
 	private Long count;
+	
 
 	
 	//엔티티 -> Dto로 바꿔준다
-	public ReserveDto(Reservation reservation, String imgUrl) {
-		this.typeName = reservation.getTypeId().getTypeName();
-		this.count = reservation.getCount();
-		this.totalPrice =reservation.getTotalPrice();
-		this.imgUrl = imgUrl;
-	}
+    public ReserveDto(Reservation reservation, String imgUrl) {
+        if (reservation != null) {
+            this.typeName = reservation.getTypeId().getTypeName();
+            this.count = reservation.getCount();
+            this.totalPrice = reservation.getTotalPrice();
+        }
+        this.imgUrl = imgUrl;
+    }
 	
 	
-
+    
 	
 
 	
