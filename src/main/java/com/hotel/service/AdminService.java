@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.hotel.constant.ReservationStatus;
 import com.hotel.dto.*;
 import com.hotel.entity.*;
 import com.hotel.repository.*;
@@ -23,6 +24,7 @@ public class AdminService {
 	private final RoomRepository roomRepository;
 	private final RoomImgService roomImgService;
 	private final RoomImgRepository roomImgRepository;
+	private final ReserveRepository reserveRepository;
 	
 	//item 테이블에 상품등록(insert)
 	public Long saveRoom(RoomFormDto roomFormDto, List<MultipartFile> roomImgFileList) throws Exception {
@@ -95,6 +97,62 @@ public class AdminService {
 		
 		return roomTypeList;
 	}
+	
+	
+	//예약목록 관리 
+	@Transactional(readOnly = true)
+	public List<ReservationHistDto> getReservationList(){
+		List<Reservation> reservations = reserveRepository.getReservations();
+		
+		List<ReservationHistDto> reservationHistDtos = new ArrayList<>();
+		
+		for(Reservation reservation : reservations) {
+			
+			RoomType typeId = reservation.getTypeId();
+			
+			Member member = reservation.getMember();
+			
+			
+			ReservationHistDto reservationHistDto = new ReservationHistDto(reservation, typeId,member);
+			RoomType roomType = reservationHistDto.getTypeId();
+			
+			reservationHistDtos.add(reservationHistDto);
+			
+		}
+		
+		return reservationHistDtos;
+	}
+	
+	//예약 업데이트
+	public void updateReservation(Long reservationId,String status) {
+		
+		Reservation reservation = reserveRepository.findById(reservationId)
+				.orElseThrow(EntityNotFoundException::new);
+		
+        // 상태 업데이트
+        ReservationStatus reservationStatus = ReservationStatus.valueOf(status);
+        reservation.setRsStatus(reservationStatus);
+		
+		
+		
+	}
+	
+	//예약업데이트2
+	public Long updateReservation2(ReserveDto reserveDto) throws Exception {
+		
+		//1. roomType 엔티티 가져와서 바꾼다.
+		Reservation reservation = reserveRepository.findById(reserveDto.getReservationId())
+							.orElseThrow(EntityNotFoundException::new);
+		//update쿼리문 실행
+		/* ★★★ 한번 insert를 진행하면 엔티티가 영속성 컨텍스트에 저장이 되므로 
+		그 이후에는 변경감지 기능이 동작하기 때문에 개발자는 update쿼리문을 쓰지 않고
+		엔티티 데이터만 변경해주면 된다. */
+		reservation.updateReservation2(reserveDto);
+
+		return reservation.getId(); //변경한 roomType의 id 리턴 
+	}
+	
+	
 	
 
 }

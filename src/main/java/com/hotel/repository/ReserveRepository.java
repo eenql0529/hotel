@@ -23,17 +23,16 @@ public interface ReserveRepository extends JpaRepository<Reservation, Long>{
 	List<Reservation> findReservations(@Param("email") String email);
 
 	
-	@Query("SELECT r FROM Reservation r JOIN r.member m JOIN r.typeId rt WHERE m.email = :email ORDER BY r.reserveDate DESC")
-	List<Reservation> findReservations1(@Param("email") String email);
-	
 	//현재 로그인한 회원의 주문 개수가 몇개인지 조회(total)
 	
 	@Query("select count(o) from Reservation o where o.member.email = :email")
 	Long countReservation(@Param("email") String email);
 	
 	
-//	select * from Reservation  where member_id =  (select member_id from member where email = 'eenql0529@daum.net');
+	@Query("select o from Reservation o order by o.reserveDate desc")
+	List<Reservation> getReservations();
 	
+
 
 			
 	

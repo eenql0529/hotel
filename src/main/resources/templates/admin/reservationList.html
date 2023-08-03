@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout1}">
+<head>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+</head>
+<th:block layout:fragment="css">
+	<style>
+.content {
+	font-family: suit !important;
+	margin: 0;
+	padding: 0;
+}
+
+.asd {
+	display: none !important;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+	margin: 0 auto;
+}
+
+th, td {
+	border: 1px solid #ccc;
+	padding: 10px;
+	text-align: center;
+}
+
+th {
+	background-color: #fff;
+	font-size: 14px;
+}
+
+tr:nth-child(even) {
+	background-color: #f2f2f2;
+}
+
+tr:hover {
+	background-color: #e6e6e6;
+}
+
+select option[value=""][disabled] {
+	display: none;
+}
+</style>
+</th:block>
+
+<div layout:fragment="content">
+	<div class="breadcrumb-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="breadcrumb-text">
+						<h2 style="font-family: suit !important;">
+							<svg xmlns="http://www.w3.org/2000/svg" height="0.625em"
+								viewBox="0 0 576 512">
+								<style>
+svg {
+	fill: #4a4c4f
+}
+</style>
+								<path
+									d="M0 96C0 60.7 28.7 32 64 32H512c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM128 288a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm32-128a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM128 384a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm96-248c-13.3 0-24 10.7-24 24s10.7 24 24 24H448c13.3 0 24-10.7 24-24s-10.7-24-24-24H224zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H448c13.3 0 24-10.7 24-24s-10.7-24-24-24H224zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H448c13.3 0 24-10.7 24-24s-10.7-24-24-24H224z" /></svg>
+							&nbsp;예약 목록
+						</h2>
+						<div class="bt-option">
+							<a href="/">Home</a> <span>Rooms</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Breadcrumb Section End -->
+
+	<div class="container"
+		style="background-color: #ddd9d9; padding-top: 15px; margin-bottom: 250px; padding-bottom: 15px;">
+
+		<table>
+			<tr>
+				<th class="col-1">예약번호</th>
+				<th class="col-2">고객명</th>
+				<th class="col-1">예약일</th>
+				<th class="col-1">체크인</th>
+				<th class="col-1">체크아웃</th>
+				<th class="col-4">객실</th>
+				<th class="col-1">요금</th>
+				<th class="col-1">상태</th>
+
+			</tr>
+			<tr th:each="reservation : ${reservations}">
+				<th class="col-1" th:text="${reservation.reservationId}"></th>
+				<th class="col-2">[[${reservation.member.name}]] <br>
+					[[${reservation.member.phone}]]
+				</th>
+				<th class="col-1"
+					th:utext="${reservation.reserveDate.replace(' ', '<br>')}">>예약일</th>
+				<th class="col-1"
+					th:utext="${reservation.checkIn.replace(' ', '<br>')}">체크인</th>
+				<th class="col-1"
+					th:utext="${reservation.checkOut.replace(' ', '<br>')}">체크아웃</th>
+				<th class="col-4">[[${reservation.typeId.typeName}]]
+					([[${reservation.guest}]]명)<br>*[[${reservation.typeId.view}]]
+				</th>
+				<th class="col-1">₩[[${#numbers.formatInteger(reservation.totalPrice,0,
+					'COMMA')}]]</th>
+				<th class="col-1">
+					<form
+						th:action="@{'/admin/' + ${reservation.reservationId} + '/updateStatus'}"
+						method="post">
+						<div class="form-group">
+							<div class="nice-select form-select" tabindex="0">
+								<span th:value="${reservation.reservationStatus}"
+									class="current">[[${reservation.reservationStatus.desc}]]</span>
+								<ul class="list">
+									<li data-value="" class="option selected disabled status"
+										style="display: none;">[[${reservation.reservationStatus}]]</li>
+									<li data-value="WAITING" class="option status">대기</li>
+									<li data-value="CONFIRMED" class="option status">확정</li>
+									<li data-value="CANCELED" class="option status">취소</li>
+									<li data-value="DELETED" class="option status">삭제</li>
+								</ul>
+							</div>
+						</div>
+						<input type="hidden" name="status" th:id="'statusField'+${reservation.reservationId}">
+						<button type="submit" class="btn btn-outline-danger"
+							th:onclick="updateReservation([[${reservation.reservationId}]])">변경하기</button>
+					</form>
+				</th>
+			</tr>
+		</table>
+
+	</div>
+
+
+</div>
+
+
+<!-- 각 페이지의 스크립트가 작성될 위치 -->
+<th:block layout:fragment="script">
+	<!-- CSS 부분은 생략하고, jQuery와 Bootstrap JavaScript 파일을 추가합니다. -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+	<script th:inline="javascript">
+		function updateReservation(reservationId) {
+			const updateConf = confirm("변경하시겠습니까?");
+			if (!updateConf)
+				return; // 취소버튼 누르면
+
+			// 선택된 값을 가져오기 위해 JavaScript로 처리
+			var selectedValue = $(".nice-select .option.status.selected").data(
+					"value");
+			$("#statusField"+reservationId).val(selectedValue); // input 필드에 선택된 값을 저장
+			console.log($("#statusField"+reservationId));
+			// request URL
+			var url = "/admin/" + reservationId + "/updateStatus";
+
+			// CSRF 토큰 설정
+			var token = $("meta[name='_csrf']").attr("content");
+			var header = $("meta[name='_csrf_header']").attr("content");
+
+			$.ajax({
+				url : url, // request URL
+				type : "POST", // 전송방식은 POST로 변경
+				data : {
+					status : selectedValue
+				}, // 선택된 예약 상태 값을 전달
+				beforeSend : function(xhr) {
+					// 데이터를 전송하기 전에 헤더에 CSRF 값을 설정
+					xhr.setRequestHeader(header, token);
+				},
+				dataType : "json",
+				cache : false,
+				success : function(result, status) {
+					location.href = '/admin/reservationList';
+				}
+			});
+		}
+	</script>
+</th:block>
+
+
+</html>

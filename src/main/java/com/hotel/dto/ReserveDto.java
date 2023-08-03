@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.modelmapper.ModelMapper;
 
+import com.hotel.constant.ReservationStatus;
 import com.hotel.entity.Reservation;
 import com.hotel.entity.RoomType;
 
@@ -33,6 +34,10 @@ public class ReserveDto {
 	
 	private Long count;
 	
+	private Long reservationId;
+	
+	private ReservationStatus rsStatus;
+	
 
 	
 	//엔티티 -> Dto로 바꿔준다
@@ -41,6 +46,8 @@ public class ReserveDto {
             this.typeName = reservation.getTypeId().getTypeName();
             this.count = reservation.getCount();
             this.totalPrice = reservation.getTotalPrice();
+            this.reservationId = reservation.getId();
+            this.rsStatus = reservation.getRsStatus();
         }
         this.imgUrl = imgUrl;
     }

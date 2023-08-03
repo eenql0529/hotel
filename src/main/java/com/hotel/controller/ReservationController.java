@@ -79,12 +79,25 @@ public class ReservationController {
 		
 		String email = principal.getName(); //id에 해당하는 정보를 가지고 온다(email)
 		Long reservationId;
+		
+		// DateTimeFormatter로 원하는 형식의 패턴을 정의합니다.
+		DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("MM.dd");
+
+		// endDate를 newFormatter 형식의 문자열로 변환합니다.
+
+		// reserveDto에 설정합니다.
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM, yyyy", Locale.ENGLISH);
 		LocalDate startDate = LocalDate.parse(reserveDto.getCheckIn(), formatter);
         LocalDate endDate = LocalDate.parse(reserveDto.getCheckOut(), formatter);
-		
+        String newFormattedEndDate = endDate.format(newFormatter);
+        String newFormattedStartDate = startDate.format(newFormatter);
+        reserveDto.setCheckOut(newFormattedEndDate);
+        reserveDto.setCheckIn(newFormattedStartDate);
+
+
+
         long daysBetween = endDate.toEpochDay() - startDate.toEpochDay(); //두 날짜 차이 구하기.
-        System.out.println(daysBetween);
+        
         reserveDto.setCount(daysBetween);
 
 		try {

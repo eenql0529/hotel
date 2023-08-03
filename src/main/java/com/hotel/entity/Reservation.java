@@ -75,9 +75,9 @@ public class Reservation {
 		reservation.setCount(reserveDto.getCount());
 		reservation.setGuest(reserveDto.getGuest());
 		reservation.setTotalPrice(roomType.getPrice()*reserveDto.getCount());
-		reservation.setRsStatus(ReservationStatus.RESERVATION);
+		reservation.setRsStatus(ReservationStatus.WAITING);
 		reservation.setReserveDate(LocalDateTime.now());
-
+		
 		roomType.removeStock();
 		
 
@@ -97,12 +97,31 @@ public class Reservation {
 	
 	//예약 취소
 	public void cancelReserve() {
-		this.rsStatus = ReservationStatus.CANCEL;
+		this.rsStatus = ReservationStatus.CANCELED;
 		
 		//재고를 원래대로 돌려놓는다.
 		cancel();
 
 		
+	}
+	
+	//예약 업데이트
+	public void updateReservation(ReservationStatus rsStatus) {
+		this.rsStatus = rsStatus;
+		if(rsStatus == rsStatus.DELETED) {
+			//재고를 원래대로 돌려놓는다.
+			cancel();
+			
+		}
+	}
+	//예약 업데이트
+	public void updateReservation2(ReserveDto reserveDto) {
+		this.rsStatus = reserveDto.getRsStatus();
+		if(rsStatus == rsStatus.DELETED) {
+			//재고를 원래대로 돌려놓는다.
+			cancel();
+			
+		}
 	}
 	
 }

@@ -72,9 +72,9 @@ public class ReservationService {
 		for (Reservation reservation : reservations) {
 			
 			RoomType typeId = reservation.getTypeId();
+			Member member = reservation.getMember();
 
-
-			ReservationHistDto reservationHistDto = new ReservationHistDto(reservation, typeId);
+			ReservationHistDto reservationHistDto = new ReservationHistDto(reservation, typeId,member);
 			RoomType roomType = reservationHistDto.getTypeId();
 			
 			for (Reservation reserve : reservations) {
@@ -126,24 +126,23 @@ public class ReservationService {
 		//OrderStatus를 update -> entity 의 필드 값을 바꿔주면 된다.
 		reservation.cancelReserve();
 		
-		reserveRepository.delete(reservation);
 	}
 	
 	
 	
 	
-//	
-//	//예약삭제
-//	public void deleteReserve(Long reservationId) {
-//		//★delete하기 전에 select 를 한번 해준다
-//		//->영속성 컨텍스트에 엔티티를 저장한 후 변경 감지를 하도록 하기 위해
-//		Reservation reservation = reserveRepository.findById(reservationId)
-//				.orElseThrow(EntityNotFoundException::new);
-//		
-//		//delete
-//		reserveRepository.delete(reservation);
-//	}
-//	
+	
+	//예약삭제
+	public void deleteReserve(Long reservationId) {
+		//★delete하기 전에 select 를 한번 해준다
+		//->영속성 컨텍스트에 엔티티를 저장한 후 변경 감지를 하도록 하기 위해
+		Reservation reservation = reserveRepository.findById(reservationId)
+				.orElseThrow(EntityNotFoundException::new);
+		
+		//delete
+		reserveRepository.delete(reservation);
+	}
+	
 	
 	
 }
