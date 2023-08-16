@@ -40,9 +40,9 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="breadcrumb-text">
-						<h2 style="font-family: suit !important;">객실 관리</h2>
+						<h2 style="font-family: suit !important;">마이페이지</h2>
 						<div class="bt-option">
-							<a href="/">Home</a> <span>Rooms</span>
+							<a href="/">Home</a> <span>MyPage</span>
 						</div>
 					</div>
 				</div>
@@ -52,40 +52,41 @@
 	<!-- Breadcrumb Section End -->
 	<div class="container"
 		style="display: flex; justify-content: flex-end; padding: 0px;">
-		<a class="roomMng_button" href="/admin/room/new">ADD ROOM</a>
 	</div>
 	<!-- Rooms Section Begin -->
 	<section class="rooms-section spad">
-		<form method="get" >
-			<div class="container" >
+		<form method="get">
+			<div class="container">
 				<div>
 					<div class="row" th:each="reservation : ${reservations}"
 						style="align-items: center; margin-bottom: 30px; border: solid 0.1px; border-color: #8f8f8f73; border-radius: 0.25rem !important;">
 						<div class="col-4" style="padding-left: 0;">
-							  <img th:src="${reservation.imgUrl}" class="rounded repImg">  
+							<img th:src="${reservation.imgUrl}" class="rounded repImg">
 						</div>
 						<div class="col-6">
 
 							<p>
-								 <strong>객실타입:</strong> <span th:text="${reservation.typeId.typeName}"></span>
+								<strong>객실타입:</strong> <span
+									th:text="${reservation.typeId.typeName}"></span>
 							</p>
 							<p>
-								 <strong>위치:</strong> <span th:text="${reservation.typeId.location}"></span> 
+								<strong>위치:</strong> <span
+									th:text="${reservation.typeId.location}"></span>
 							</p>
 							<p>
-								 <strong>전망:</strong> <span th:text="${reservation.typeId.view}"></span> 
+								<strong>전망:</strong> <span th:text="${reservation.typeId.view}"></span>
 							</p>
 							<p>
-<strong>가격:</strong> <span th:text="${#numbers.formatInteger(reservation.totalPrice, 0, 'COMMA')}+'원'"></span> 
-							</p> 
+								<strong>가격:</strong> <span
+									th:text="${#numbers.formatInteger(reservation.totalPrice, 0, 'COMMA')}+'원'"></span>
+							</p>
 							<!-- 등등 필요한 정보를 추가 -->
 						</div>
-						
-												<div class="col-2"> 
-												 <a th:value="${reservation.reservationId}"
-								th:onclick="cancelReserve([[${reservation.reservationId}]])"
-								class="roomMng_button" style="color: white; cursor: pointer;">
-								Cancel Room</a> 
+
+						<div class="col-2" style="top: 84px; left: 33px;">
+							<a th:value="${reservation.reservationId}" th:onclick="cancelReserve([[${reservation.reservationId}]])" class="roomMng_button"
+								style="color: white; cursor: pointer; width: 140px;"> Cancel
+								Room</a>
 						</div>
 
 					</div>
@@ -98,25 +99,21 @@
 	<script th:inline="javascript">
 		function cancelReserve(reservationId) {
 			const cancelConf = confirm("예약 취소하시겠습니까?");
-			if(!cancelConf) return; //취소버튼 누르면
-			
-			var token = $("meta[name='_csrf']").attr("content");
-			var header = $("meta[name='_csrf_header']").attr("content");
-			
+			if (!cancelConf)
+				return; //취소버튼 누르면
+
 			//request URL
 			var url = "/reservation/" + reservationId + "/cancel";
 			
-			//서버로 보내줄 데이터(반드시 JSON -> string 타입으로 바꿔줘야한다)
-			var paramData = {
-				reservationId: reservationId	
-			};
-			var param = JSON.stringify(paramData);
-			
+			var token = $("meta[name='_csrf']").attr("content");
+			var header = $("meta[name='_csrf_header']").attr("content");
+
+
+
 			$.ajax({
 				url : url, //request URL
-				type : "POST", //전송방식
+				type : "DELETE", //전송방식
 				contentType : "application/json",
-				data : param,
 				beforeSend : function(xhr) {
 					//데이터를 전송하기 전에 헤더에 csrf 값을 설정
 					xhr.setRequestHeader(header, token);
@@ -124,22 +121,11 @@
 				dataType : "json",
 				cache : false,
 				success : function(result, status) {
-
-					//주문취소 후에 원래 페이지로 이동시켜준다.
-					location.href = '/check';
-				},
-				error : function(jqXHR, status, error) {
-					if(jqXHR.status == '401') {
-						alert('로그인 후 이용해주세요.');
-						location.href = '/members/login';
-					} else {
-						alert(jqXHR.responseText);
-					}
+					location.href = '/admin/room';
 				}
+
 			});
 		}
-		
-		
 	</script>
 </th:block>
 </html>
