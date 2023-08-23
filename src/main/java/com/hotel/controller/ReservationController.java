@@ -121,7 +121,7 @@ public class ReservationController {
 		List<ReservationHistDto> reservationHistDtoList = 
 				reservationService.getReservationList(principal.getName());
 		
-
+		reservationHistDtoList.get(0).getReservationId();
 		//3. 서비스에서 가져온 값들을 view단에 model을 이용해 전송
 
 		model.addAttribute("reservations", reservationHistDtoList);

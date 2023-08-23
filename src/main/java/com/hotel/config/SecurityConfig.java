@@ -28,7 +28,7 @@ public class SecurityConfig {
 		
         .authorizeHttpRequests(authorize -> authorize  //1.페이지 접근에 관한
 				//모든사용자가 로그인(인증)없이 접근할 수 있도록 설정
-				.requestMatchers("/css/**","/js/**","/img/**","/images/**","/fonts/**").permitAll()
+				.requestMatchers("/css/**","/js/**","/img/**","/images/**","/fonts/**","/png/**","/image/**").permitAll()
 				.requestMatchers("/","/members/**","/rooms/**").permitAll()
 				.requestMatchers("/favicon.ico","/error").permitAll()
 				//'admin'으로 시작하는 경로는 관리자만 접근가능하도록 설정
