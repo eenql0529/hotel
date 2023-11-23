@@ -27,7 +27,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.hotel.dto.ReservationHistDto;
 import com.hotel.dto.ReserveDto;
 import com.hotel.dto.RoomFormDto;
+import com.hotel.entity.Inventory;
 import com.hotel.entity.RoomType;
+import com.hotel.repository.InventoryRepository;
 import com.hotel.service.ReservationService;
 import com.hotel.service.RoomService;
 
@@ -40,6 +42,7 @@ public class ReservationController {
 	
 	private final ReservationService reservationService;
 	private final RoomService roomService;
+	private final InventoryRepository inventoryRepository;
 	
 	
 	//예약페이지 보여주기
@@ -49,6 +52,7 @@ public class ReservationController {
 
 
 	    RoomFormDto roomFormDto = roomService.getRoomDtl(typeId);
+	    
 	    model.addAttribute("rooms", roomFormDto);
 	    return "reserve/reserve";
 	}
@@ -65,7 +69,6 @@ public class ReservationController {
 	public @ResponseBody ResponseEntity order(@RequestBody @Valid ReserveDto reserveDto,
 			BindingResult bindingResult, Principal principal) {
 		//Principal: 로그인한 사용자의 정보를 가져올 수 있다.
-		System.out.println(reserveDto.getCheckIn()+"askjfhasklgjhaslgkjahsgk");
 		if(bindingResult.hasErrors()) {
 			StringBuilder sb = new StringBuilder();
 			List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -80,25 +83,7 @@ public class ReservationController {
 		String email = principal.getName(); //id에 해당하는 정보를 가지고 온다(email)
 		Long reservationId;
 		
-		// DateTimeFormatter로 원하는 형식의 패턴을 정의합니다.
-		DateTimeFormatter newFormatter = DateTimeFormatter.ofPattern("MM.dd");
 
-		// endDate를 newFormatter 형식의 문자열로 변환합니다.
-
-		// reserveDto에 설정합니다.
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM, yyyy", Locale.ENGLISH);
-		LocalDate startDate = LocalDate.parse(reserveDto.getCheckIn(), formatter);
-        LocalDate endDate = LocalDate.parse(reserveDto.getCheckOut(), formatter);
-        String newFormattedEndDate = endDate.format(newFormatter);
-        String newFormattedStartDate = startDate.format(newFormatter);
-        reserveDto.setCheckOut(newFormattedEndDate);
-        reserveDto.setCheckIn(newFormattedStartDate);
-
-
-
-        long daysBetween = endDate.toEpochDay() - startDate.toEpochDay(); //두 날짜 차이 구하기.
-        
-        reserveDto.setCount(daysBetween);
 
 		try {
 			reservationId = reservationService.reserve(reserveDto, email); //주문하기
@@ -121,7 +106,7 @@ public class ReservationController {
 		List<ReservationHistDto> reservationHistDtoList = 
 				reservationService.getReservationList(principal.getName());
 		
-		reservationHistDtoList.get(0).getReservationId();
+
 		//3. 서비스에서 가져온 값들을 view단에 model을 이용해 전송
 
 		model.addAttribute("reservations", reservationHistDtoList);

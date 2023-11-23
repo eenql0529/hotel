@@ -64,7 +64,7 @@ public class RoomType extends BaseEntity {
 	private Availability availability;
 	
 	
-	private int stock = 10; //객실재고
+
 
 	
 	//roomType 엔티티 수정
@@ -89,20 +89,5 @@ public class RoomType extends BaseEntity {
 	
 	
 	
-	
-	//재고감소
-	public void removeStock() {
-		int restStock = this.stock - 1 ; //남은 재고 수량
-		
-		if(restStock <0) {
-			throw new OutOfStockException("빈 객실이 없습니다.");
-		}
-		this.stock = restStock;  //남은 재고 반영
-	}
-	
-	//재고증가
-	public void addStock() {
-		this.stock += 1;
-	}
 
 }

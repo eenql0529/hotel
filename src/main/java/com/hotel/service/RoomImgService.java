@@ -17,12 +17,11 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class RoomImgService {
 
-	//private String roomImgLocation = "C:/hotel/room";
+	private String roomImgLocation = "C:/hotel/room";
 	private final RoomImgRepository roomImgRepository;
 	private final FileService fileService;
 	
-	@Value("${roomImgLocation}")
-	private String roomImgLocation;
+
 	
 	/*
 	 * 이미지 저장

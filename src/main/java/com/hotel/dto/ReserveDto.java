@@ -44,10 +44,21 @@ public class ReserveDto {
     public ReserveDto(Reservation reservation, String imgUrl) {
         if (reservation != null) {
             this.typeName = reservation.getTypeId().getTypeName();
-            this.count = reservation.getCount();
             this.totalPrice = reservation.getTotalPrice();
             this.reservationId = reservation.getId();
             this.rsStatus = reservation.getRsStatus();
+            
+            // 예약의 count가 null이 아닌 경우에만 값을 설정
+            if (reservation.getCount() != null) {
+                this.count = reservation.getCount();
+            } else {
+                // count가 null인 경우, 예외 처리 또는 기본값 설정
+                // 여기에서는 기본값으로 0을 설정하도록 했습니다.
+                this.count = (long) 0;
+            }
+        } else {
+            // reservation이 null인 경우에도 count에 기본값 설정
+            this.count = (long) 0;
         }
         this.imgUrl = imgUrl;
     }

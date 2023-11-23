@@ -60,7 +60,8 @@ public class RoomFormDto {
 	private static ModelMapper modelMapper = new ModelMapper();
 	
 	public RoomType createRoom() {
-	
+		
+		
 		return modelMapper.map(this, RoomType.class);
 	}
 	

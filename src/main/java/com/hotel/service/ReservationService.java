@@ -1,6 +1,8 @@
 package com.hotel.service;
 
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +14,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
+import com.hotel.Exception.OutOfStockException;
 import com.hotel.dto.ReservationHistDto;
 import com.hotel.dto.ReserveDto;
+import com.hotel.entity.Inventory;
 import com.hotel.entity.Member;
 import com.hotel.entity.Reservation;
 import com.hotel.entity.RoomImg;
 import com.hotel.entity.RoomType;
+import com.hotel.repository.InventoryRepository;
 import com.hotel.repository.MemberRepository;
 import com.hotel.repository.ReserveRepository;
 import com.hotel.repository.RoomImgRepository;
@@ -36,11 +41,13 @@ public class ReservationService {
 	private final MemberRepository memberRepository;
 	private final ReserveRepository reserveRepository;
 	private final RoomImgRepository roomImgRepository;
+	private final InventoryRepository inventoryRepository;
 
 	private final Reservation reserve;
 
 	
 	//예약하기
+	@Transactional
 	public Long reserve(ReserveDto reserveDto, String email) {
 		
 		//1.주문할 객실을 조회
@@ -49,13 +56,61 @@ public class ReservationService {
 		//2.현재 로그인한 회원의 이메일을 이용해 회원정보를 조회
 		Member member = memberRepository.findByEmail(email);
 		
+		
 		//3.주문할 상품 엔티티와 주문 수량을 이용하여 주문 상품 엔티티를 생성
+		
+		// DateTimeFormatter로 원하는 형식의 패턴을 정의합니다.
 
-		Reservation reservation = reserve.createReserve(member,roomType, reserveDto);
-		
-		reserveRepository.save(reservation);
-		
-		return reservation.getId();
+		// endDate를 newFormatter 형식의 문자열로 변환합니다.
+
+		// reserveDto에 설정합니다.
+
+		LocalDate startDate = LocalDate.parse(reserveDto.getCheckIn());
+        LocalDate endDate = LocalDate.parse(reserveDto.getCheckOut());
+
+        long daysBetween = endDate.toEpochDay() - startDate.toEpochDay(); //두 날짜 차이 구하기.
+        
+        reserveDto.setCount(daysBetween);
+        
+        // 여기서 트랜잭션 시작
+        Reservation reservation = null;
+        try {
+            reservation = reserve.createReserve(member, roomType, reserveDto);
+            reserveRepository.save(reservation);
+
+            startDate = LocalDate.parse(reserveDto.getCheckIn());
+            endDate = LocalDate.parse(reserveDto.getCheckOut());
+
+            while (!startDate.isAfter(endDate)) {
+                Inventory inventory = inventoryRepository.findByDateAndRoomType(startDate.toString(), roomType);
+                System.out.println(inventory);
+                if (inventory != null && inventory.getStock() > 0) {
+                    inventory.setStock(inventory.getStock() - 1); // 재고 감소
+                    inventoryRepository.save(inventory);
+                } else if(inventory == null) {
+                	inventory = new Inventory(); // 새로운 Inventory 객체 생성
+                	inventory.setDate(startDate.toString());
+                	inventory.setRoomType(roomType);
+                    inventory.setStock(inventory.getStock() - 1); // 재고 감소
+                    inventoryRepository.save(inventory);
+                }
+                else {
+                    throw new OutOfStockException("재고가 부족합니다.");
+                }
+
+                startDate = startDate.plusDays(1);
+            }
+
+            // 예약 및 재고 업데이트가 모두 성공하면 커밋됨
+        } catch (Exception e) {
+            // 예약 또는 재고 업데이트 중 하나라도 실패하면 롤백
+            if (reservation != null) {
+                reserveRepository.delete(reservation);
+            }
+            throw e; // 예외 다시 던짐
+        }
+
+        return reservation.getId();
 		
 	}
 	

@@ -3,6 +3,18 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layouts/layout1}">
 
+<th:block layout:fragment="css">
+<style>	            #container {
+                width: 1000px;
+                margin: 20px auto;
+            }
+            .ck-editor__editable[role="textbox"] {
+                /* editing area */
+                min-height: 200px;
+            }</style>
+
+	</th:block>
+
 <div layout:fragment="content">
 	<div class="bg-light py-3">
 		<div class="container">
@@ -110,9 +122,9 @@
 							<div class="form-group row">
 								<div class="col-md-12">
 									<label th:for="amenities" class="text-black">어메니티</label>
-									<textarea rows=10 class="form-control" placeholder="어메니티"
-										 th:field="*{amenities}"id="floatingTextarea"></textarea>
-									<p class="fieldError"></p>
+									<textarea  name="text" id="editor"  class="form-control"
+										 th:field="*{amenities}"></textarea>
+								
 								</div>
 							</div> 
  							<div class="form-group row">
@@ -153,25 +165,22 @@
 	</div>
 </div>
 <th:block layout:fragment="script">
-<script src="https://cdn.tiny.cloud/1/wbp6amz0uk92ml3i2koa8kum1gthp9eiebu0ynmvboph9x2j/tinymce/5/tinymce.min.js"></script>
+
+	<script src="/js/ckeditor.js"></script>
+	<script src="/ckeditor/ko.js"></script>
 
 
-<!-- textarea를 리치 텍스트 에디터로 변환 -->
-<script>
-  tinymce.init({
-    selector: 'textarea', // 리치 텍스트 에디터로 변환할 textarea 선택자
-    height: 300,
-    language: 'ko_KR',
-    plugins: 'image',
-    plugins: 'textalignment', // textalignment 플러그인 추가// image 플러그인 활성화
-    file_picker_types: 'image'   // 이미지 업로드 기능을 위한 옵션
 
-    // 기타 옵션 설정 가능
-  });
-</script>
+    <script>
+    ClassicEditor
+      .create( document.querySelector( '#editor' ) )
+      .catch( error => {
+        console.error( error );
+      } );
+  </script>
+
 
  	<script th:inline="javascript">
- 	
 	
 	$(document).ready(function(){
     	var errorMessage = [[${errorMessage}]];

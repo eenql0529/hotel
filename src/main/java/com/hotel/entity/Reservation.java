@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.context.annotation.Configuration;
 
 import com.hotel.constant.ReservationStatus;
@@ -57,10 +59,12 @@ public class Reservation {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="member_id")
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Member member;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="type_id")
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private RoomType typeId;
 
 
@@ -77,8 +81,7 @@ public class Reservation {
 		reservation.setTotalPrice(roomType.getPrice()*reserveDto.getCount());
 		reservation.setRsStatus(ReservationStatus.WAITING);
 		reservation.setReserveDate(LocalDateTime.now());
-		
-		roomType.removeStock();
+
 		
 
 		
@@ -89,19 +92,12 @@ public class Reservation {
 	
 
 	
-	//재고를 원래대로
-	public void cancel() {
-		this.getTypeId().addStock();
-	}
+
 	
 	
 	//예약 취소
 	public void cancelReserve() {
 		this.rsStatus = ReservationStatus.CANCELED;
-		
-		//재고를 원래대로 돌려놓는다.
-		cancel();
-
 		
 	}
 	
@@ -109,18 +105,14 @@ public class Reservation {
 	public void updateReservation(ReservationStatus rsStatus) {
 		this.rsStatus = rsStatus;
 		if(rsStatus == rsStatus.DELETED) {
-			//재고를 원래대로 돌려놓는다.
-			cancel();
-			
+
 		}
 	}
 	//예약 업데이트
 	public void updateReservation2(ReserveDto reserveDto) {
 		this.rsStatus = reserveDto.getRsStatus();
 		if(rsStatus == rsStatus.DELETED) {
-			//재고를 원래대로 돌려놓는다.
-			cancel();
-			
+
 		}
 	}
 	
