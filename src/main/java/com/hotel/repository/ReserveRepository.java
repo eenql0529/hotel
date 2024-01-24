@@ -1,5 +1,6 @@
 package com.hotel.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.hotel.dto.AdminDto;
 import com.hotel.dto.ReserveDto;
 import com.hotel.entity.QReservation;
 import com.hotel.entity.QRoomImg;
@@ -33,7 +35,34 @@ public interface ReserveRepository extends JpaRepository<Reservation, Long>{
 	List<Reservation> getReservations();
 	
 
-
-			
+    @Query("SELECT COUNT(*) FROM Reservation r WHERE DATE(r.checkIn) = STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일')")
+    int countCheckInToday(@Param("selectedDate") String selectedDate);
 	
+	//오늘 체크인한 수
+	@Query("SELECT COUNT(r) FROM Reservation r WHERE DATE(r.checkIn) = STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일') AND r.rsStatus = 'CHECK_IN'")
+	int countRsStatusCheckInToday (@Param("selectedDate") String selectedDate);
+	
+	//오늘 체크아웃해야하는 수
+	@Query("select count(r) from Reservation r where date(r.checkOut) = STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일')")
+	int countCheckOutToday(@Param("selectedDate") String selectedDate);
+	
+	//오늘 체크아웃한 수
+	@Query("SELECT COUNT(r) FROM Reservation r WHERE DATE(r.checkOut) = STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일') AND r.rsStatus = 'CHECK_OUT'")
+	int countRsStatusCheckOutToday (@Param("selectedDate") String selectedDate);
+	
+	//오늘 들어온 예약
+	@Query("select count(r) from Reservation r where date(r.reserveDate) = STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일') and r.rsStatus = 'RESERVATION'")
+	int countReservationToday(@Param("selectedDate") String selectedDate);
+	//오늘 취소된 예약
+	@Query("select count(r) from Reservation r where date(r.updateTime) = STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일') and r.rsStatus = 'CANCEL'")
+	int countCanceledReservationToday(@Param("selectedDate") String selectedDate);
+	
+    @Query(value = "SELECT ROUND(IFNULL((COUNT(distinct res.reservation_id) / (COUNT(distinct inv.type_id) * 3)) * 100, 0)) AS occupancy_rate " +
+            "FROM reservation res " +
+            "JOIN inventory inv ON res.check_in = inv.date " +
+            "WHERE DATE(inv.date) = STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일')", nativeQuery = true)
+    Double calculateOccupancyRate(@Param("selectedDate") String selectedDate);
+    
+    @Query(value ="select rt.type_name, IFNULL((COUNT(rs.reservation_id)), 0), ROUND(IFNULL((COUNT(rs.reservation_id) / 3 * 100), 0)) as occupancy_rate from room_type rt LEFT JOIN reservation rs on rt.type_id = rs.type_id AND date(rs.check_in) <= STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일') AND date(rs.check_out) > STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일') GROUP BY rt.type_name", nativeQuery = true)
+    List<Object[]> calculateRate(@Param("selectedDate") String selectedDate);
 }

@@ -24,8 +24,7 @@ public class RoomFormDto {
 	@NotBlank(message = "객실타입은 필수 입력입니다.")
 	private String typeName;
 	
-	@NotBlank(message = "위치는 필수 입력입니다.")
-	private String location;
+
 	@NotBlank(message = "객실구성은 필수 입력입니다.")
 	private String configuration;
 	@NotBlank(message = "객실침대는 필수 입력입니다.")
@@ -36,20 +35,19 @@ public class RoomFormDto {
 	private String view;
 	
 	private String amenities;
-
-	private String comment;
-
 	
 	
+	private int price;
+
 	private int capacity;
 	
-	@NotNull(message = "객실가격은 필수 입력입니다.")
-	private int price;
-	
+	private String comment;
+
 	@NotBlank(message = "객실설명은 필수 입력입니다.")
 	private String roomDetail;
 	
 	private Availability availability;
+	
 	
 	private RoomImg imgId;
 	

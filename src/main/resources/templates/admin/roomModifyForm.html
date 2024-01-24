@@ -1,134 +1,346 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layouts/layout1}">
+	layout:decorate="~{layouts/adminLayout}">
+<head>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<!-- 각 페이지의 CSS가 작성될 위치 -->
+<th:block layout:fragment="css">
+	<style>
+ 	.padding-left-120{
+	padding-left:120px;
+	}
+	.padding-left-50{
+	padding-left:50px;
+	}
+	    #editor {
+        height: 300px;
+        width: 100%;
+    }
+    .form-border{
+    border-bottom: 1px solid #cecece;
+    border-radius: 0;
+    }
+    .form-padding-top{
+padding-top: 30px;
+    }
+    .form-max-width{
+    margin: 4px 0 4px 12px;
+    padding: 0;
+    }
+    #root {
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 50px;
+  max-width: 800px;
+}
 
-<div layout:fragment="content">
-	<div class="bg-light py-3">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12 mb-0">
-					<a href="/">Home</a> <span class="mx-2 mb-0">/</span> <strong
-						class="text-black">객실등록</strong>
+.title {
+  left: 82px;
+    position: absolute;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.contents {
+  display: flex;
+  flex-direction: row;
+  margin-top: 30px;
+}
+.contents .upload-box {
+  width: calc(50% - 15px);
+  box-sizing: border-box;
+  margin-right: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.contents .upload-box .drag-file {
+  width: 100%;
+  height: 360px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 3px dashed #dbdbdb;
+}
+.contents .upload-box .drag-file.highlight {
+  border: 3px dashed red;
+}
+.contents .upload-box .drag-file .image {
+  width: 40px;
+}
+.contents .upload-box .drag-file .message {
+  margin-bottom: 0;
+}
+.contents .upload-box .file-label {
+  margin-top: 30px;
+  background-color: #5b975b;
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+  width: 50%;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.contents .upload-box .file {
+  display: none;
+}
+
+.contents .files {
+  width: calc(50% - 15px);
+  box-sizing: border-box;
+  overflow: auto;
+  height: 360px;
+}
+.contents .files .file {
+  display: flex;
+  padding: 20px 20px;
+  border-bottom: 1px solid #dbdbdb;
+}
+.contents .files .file:last-child {
+  margin-bottom: 0px;
+  border-bottom: none;
+}
+
+.contents .files .file .thumbnail {
+  display: flex;
+  flex: none;
+  width: 50px;
+  margin-right: 20px;
+  align-items: center;
+}
+.contents .files .file .thumbnail .image {
+  width: 100%;
+}
+
+.contents .files .file .details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.contents .files .file .details .header {
+  display: flex;
+}
+.contents .files .file .details .header .name {
+  width: 100px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.contents .files .file .details .header .size {
+  margin-left: auto;
+}
+
+.contents .files .file .progress {
+  position: relative;
+  height: 6px;
+  background-color: #dbdbdb;
+  overflow: hidden;
+  margin-top: 4px;
+  border-radius: 10px;
+}
+.contents .files .file .progress .bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #5b975b;
+}
+
+.contents .files .file .status {
+  display: flex;
+  width: 100%;
+}
+.contents .files .file .status .percent {
+}
+.contents .files .file .status .speed {
+  margin-left: auto;
+}
+
+@media(max-width: 700px) {
+  .contents {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+  }
+  .contents .upload-box {
+    width: 100%;
+    box-sizing: border-box;
+    margin-right: 0;
+  }
+  .contents .upload-box .drag-file {
+    height: 150px;
+  }
+  .contents .files {
+    width: 100%;
+    box-sizing: border-box;
+    margin-right: 0;
+    overflow: initial;
+  }
+}
+.fieldError{
+font-size: 13px;
+    font-weight: bold;
+    color: #e91e63;
+}
+    
+</style>
+
+</th:block>
+
+</head>
+<main layout:fragment="content">
+	<div class="col-12">
+		<div class="card my-4">
+			<div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+				<div
+					class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3"
+					style="display: flex; justify-content: space-between;">
+
+					<h6 class="text-white text-capitalize ps-3">객실 등록</h6>
 				</div>
 			</div>
-		</div>
-	</div>
+			<div class=" card-body px-0 pb-2"style="
+    padding-top: 65px;
+">
+				<div class="container"style="display: flex; flex-direction: row;">
 
-	<div class="site-section">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<h2 class="h3 mb-3 text-black">객실등록</h2>
-					<div class="p-3 p-lg-5 border">
-						<form role="form" th:action="@{'/admin/room/' + ${roomFormDto.id}}" method="post"  enctype="multipart/form-data" name="roomForm"
+
+
+					<form class="container"role="form" th:action="@{'/admin/room/' + ${roomFormDto.id}}" method="post"
+						enctype="multipart/form-data" name="roomtypeForm"
 						th:object="${roomFormDto}">
 
-							<input type="hidden" th:field="*{id}"/>
+						<input type="hidden" th:field="*{id}" />
+<div class="row justify-content-md-center ">
 
-							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="typeName"  class="text-black">객실타입명</label> 
-									<input type="text"
-										th:field="*{typeName}" class="form-control" placeholder="객실타입명 입력">
-									 <p  th:errors="*{typeName}" class="fieldError"></p>
-								</div>
+							<div class="col padding-left-50">
+								<label th:for="typeName" class="text-black">객실타입명</label> 
+								<input
+									type="text" th:field="*{typeName}" class="form-control form-border"
+									placeholder="객실타입명 입력">
+								<p th:errors="*{typeName}" class="fieldError"></p>
+							</div>
+						
+						<div class="row g-3 form-padding-top">
+												<div class="col-md padding-left-120 display-flex-column">
+
+							<label th:for="view" class="text-black">뷰</label> <select
+								class="form-control form-select-sm form-max-width"
+								aria-label=".form-select-sm example" th:field="*{view}">
+								<option value="Seaside View">Seaside View</option>
+								<option value="Mountain View">Mountain View</option>
+
+							</select>
+
+						</div>
+							<div class="col-md padding-left-120">
+								<label th:for="price" class="text-black">가격</label> <input
+									type="text" th:field="*{price}" class="form-control form-border"
+									placeholder="가격 입력" oninput="inputNumberFormat(this)">
+								<p class="fieldError"></p>
+							</div>
+												<div class="col-md padding-left-120 display-flex-column">
+							<label th:for="capacity" class="text-black">객실수용인원</label> <select
+								class="form-control form-select-sm form-max-width"
+								aria-label=".form-select-sm example" th:field="*{capacity}">
+								<option value="1">1명</option>
+								<option value="2">2명</option>
+								<option value="3">3명</option>
+								<option value="4">4명</option>
+							</select>
+						</div>
+						</div>
+						<div class="row g-3 form-padding-top">
+						<div class="col-md padding-left-120 display-flex-column">
+							<label th:for="bedType" class="text-black">침대</label> <select
+								class="form-control form-select-sm"
+								aria-label=".form-select-sm example" th:field="*{bedType}">
+								<option value="싱글Bed 2개">싱글Bed 2개</option>
+								<option value="더블Bed 1개">더블Bed 1개</option>
+								<option value="더블Bed 1개+싱글Bed 1개">더블Bed 1개+싱글Bed 1개</option>
+								<option value="더블Bed 2개">더블Bed 2개</option>
+								<option value="킹사이즈Bed 1개">킹사이즈Bed 1개</option>
+
+							</select>
+						</div>
+
+
+
+							<div class="col-md padding-left-120">
+								<label th:for="configuration" class="text-black">구성</label> <input
+									type="text" th:field="*{configuration}" class="form-control form-border"
+									placeholder="객실구성 입력">
+								<p class="fieldError"></p>
 							</div>
 
-							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="location" class="text-black">위치</label> 
-									<input type="text"
-										th:field="*{location}"class="form-control"  placeholder="가격 입력">
-									 <p  th:errors="*{location}"class="fieldError"></p> 
-								</div>
+							<div class="col-md padding-left-120">
+								<label th:for="roomSize" class="text-black">객실크기</label> <input
+									type="text" th:field="*{roomSize}" class="form-control form-border"
+									placeholder="객실크기 입력">
+								<p class="fieldError"></p>
 							</div>
-							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="configuration"class="text-black">구성</label> 
-									<input type="text"
-										th:field="*{configuration}"class="form-control" placeholder="가격 입력">
-									<p class="fieldError"></p>
-								</div>
 							</div>
- 							<div class="form-group row">
-							<label th:for="bedType" class="text-black" >침대</label>
-								<select  class="form-control form-select form-select-sm"
-									aria-label=".form-select-sm example" th:field="*{bedType}" >
-									<option value="싱글Bed 2개">싱글Bed 2개</option>
-									<option value="더블Bed 1개">더블Bed 1개</option>
-									<option value="더블Bed 1개+싱글Bed 1개">더블Bed 1개+싱글Bed 1개</option>
-									<option value="더블Bed 2개">더블Bed 2개</option>
-									<option value="킹사이즈Bed 1개">킹사이즈Bed 1개</option>
-
-								</select>
-							</div> 
-							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="roomSize"class="text-black">객실크기</label> 
-									<input type="text"
-										th:field="*{roomSize}"class="form-control" placeholder="가격 입력">
-									<p class="fieldError"></p>
-								</div>
+						<div class="row g-3 form-padding-top">
+							<div class="col-lg-4 padding-left-120">
+								<label th:for="comment" class="text-black">대표문구</label> <input
+									th:field="*{comment}" type="text" class="form-control form-border "
+									placeholder="대표문구 입력">
+								<p class="fieldError"></p>
 							</div>
-							<div class="form-group row">
-
-									<label th:for="view" class="text-black">전망</label> 
-								<select  class="form-control form-select form-select-sm"
-									aria-label=".form-select-sm example" th:field="*{view}" >
-									<option value="Seaside View">Seaside View</option>
-									<option value="Mountain View">Mountain View</option>
-
-								</select>
-	
+							<div class="col-lg-4 padding-left-120">
+								<label th:for="roomDetail" class="text-black">객실소개(상세페이지)</label> <input
+									th:field="*{roomDetail}" type="text" class="form-control form-border"
+									placeholder="객실소개 입력">
+								<p class="fieldError"></p>
 							</div>
-							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="roomDetail" class="text-black">객실소개</label> 
-									<input
-										th:field="*{roomDetail}"type="text" class="form-control" placeholder="객실상세내용 입력">
-									<p class="fieldError"></p>
-								</div>
-							</div>
-							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="comment" class="text-black">Comment</label> 
-									<input
-										th:field="*{comment}"type="text" class="form-control" placeholder="Comment 입력">
-									<p class="fieldError"></p>
-								</div>
-							</div>
-							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="price" class="text-black">가격</label> 
-									<input type="text"
-										th:field="*{price}"class="form-control" placeholder="가격 입력"onkeyup="inputNumberFormat(this)">
-									<p class="fieldError"></p>
-								</div>
+							
 							</div>
 
-							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="amenities" class="text-black">어메니티</label>
-									<textarea  name="text" id="editor"  class="form-control"
-										 th:field="*{amenities}"></textarea>
-								
-								</div>
-							</div> 
- 							<div class="form-group row">
-							<label th:for="capacity" class="text-black" >객실수용인원</label>
-								<select  class="form-control form-select form-select-sm"
-									aria-label=".form-select-sm example" th:field="*{capacity}" >
-									<option value="1">1명</option>
-									<option value="2">2명</option>
-									<option value="3">3명</option>
-									<option value="4">4명</option>
-								</select>
-							</div> 
+
+						<div class="form-group form-padding-top">
+							<div class="col padding-left-120">
+								<label th:for="amenities" class="text-black">어메니티</label>
+								<textarea name="text" id="editor" class="form-control"
+									th:field="*{amenities}"></textarea>
+
+							</div>
+						</div>
+<div id="root">
+  <h2 class="title">File Upload</h2>
+  <hr>
+  <div class="contents"th:each="roomImgDto, status: ${roomFormDto.roomImgDtoList}">
+    <div class="upload-box">
+      <div id="drop-file" class="drag-file">
+        <img src="https://img.icons8.com/pastel-glyph/2x/image-file.png" alt="파일 아이콘" class="image">
+        <p class="message">Drag files to upload</p>
+      </div>
+      <label class="file-label" for="roomImgFile">Choose File</label>
+      <input class="file" id="roomImgFile" type="file" name="roomImgFile" multiple onchange="dropFile.handleFiles(this.files)">
+    </div>
+    <div id="files" class="files"th:text="${not #strings.isEmpty(roomImgDto.oriImgName)} 
+  										? ${roomImgDto.oriImgName} : '객실이미지' + ${status.index+1}">
+      <div class="file">
+        <div class="thumbnail">
+        </div>
+        <div class="details">
+          <header class="header">
+          </header>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
-
-							<div class="form-group row" th:if="${not #lists.isEmpty(roomFormDto.roomImgDtoList)}" th:each="roomImgDto, status: ${roomFormDto.roomImgDtoList}">
+<!-- 							<div class="form-group row" th:if="${not #lists.isEmpty(roomFormDto.roomImgDtoList)}" th:each="roomImgDto, status: ${roomFormDto.roomImgDtoList}">
 								<div class="col-md-12">
 								 	<label for="formFile" class="form-label" 
   									th:text="${not #strings.isEmpty(roomImgDto.oriImgName)} 
@@ -137,27 +349,42 @@
   									<input class="form-control" type="file" id="roomImgFile" name="roomImgFile">
 								</div>
 							</div>
-
-							<div class="form-group">
-								<div class="col-md-12 d-flex justify-content-center">
-									<button type="button" class="btn btn-primary mb-3"
-										onclick="beforeSubmit()" style="width: 150px;">수정완료</button>
-								</div>
+ -->							
+							
+							
+<!-- 						<div class="form-group row form-padding-top"
+							th:each="num: ${#numbers.sequence(1,5)}">
+							<div class="col-md-12">
+								<label for="formFile" class="form-label"
+									th:text="객실이미지 + ${num}"></label> <input id="roomImgFile"
+									name="roomImgFile" class="form-control" type="file" multiple>
 							</div>
+						</div> -->
 
-							<input type="hidden" th:name="${_csrf.parameterName}"
-								th:value="${_csrf.token}">
-						</form>
-					</div>
+						<div class="form-group" style="
+    margin-top: 130px;
+">
+							<div class="col-md-12 d-flex justify-content-center">
+								<button type="button" class="btn btn-primary mb-3"
+									onclick="beforeSubmit()" style="width: 205px;">객실 등록</button>
+							</div>
+						</div>
+
+</div>
+						<input type="hidden" th:name="${_csrf.parameterName}"
+							th:value="${_csrf.token}">
+					</form>
+
 				</div>
+
+
 			</div>
 		</div>
 	</div>
-</div>
+</main>
 <th:block layout:fragment="script">
 
 	<script src="/js/ckeditor.js"></script>
-	<script src="/ckeditor/ko.js"></script>
 
 
 
@@ -167,22 +394,101 @@
       .catch( error => {
         console.error( error );
       } );
+    
+
+    function DropFile(dropAreaId, fileListId) {
+  	  let dropArea = document.getElementById(dropAreaId);
+  	  let fileList = document.getElementById(fileListId);
+
+  	  function preventDefaults(e) {
+  	    e.preventDefault();
+  	    e.stopPropagation();
+  	  }
+
+  	  function highlight(e) {
+  	    preventDefaults(e);
+  	    dropArea.classList.add("highlight");
+  	  }
+
+  	  function unhighlight(e) {
+  	    preventDefaults(e);
+  	    dropArea.classList.remove("highlight");
+  	  }
+
+  	  function handleDrop(e) {
+  	    unhighlight(e);
+  	    let dt = e.dataTransfer;
+  	    let files = dt.files;
+
+  	    handleFiles(files);
+
+  	    const fileList = document.getElementById(fileListId);
+  	    if (fileList) {
+  	      fileList.scrollTo({ top: fileList.scrollHeight });
+  	    }
+  	  }
+
+  	  function handleFiles(files) {
+  	    files = [...files];
+  	    files.forEach(previewFile);
+  	  }
+
+  	  function previewFile(file) {
+  	    console.log(file);
+  	    fileList.appendChild(renderFile(file));
+  	  }
+
+  	  function renderFile(file) {
+  	    let fileDOM = document.createElement("div");
+  	    fileDOM.className = "file";
+  	    fileDOM.innerHTML = `
+  	      <div class="thumbnail">
+  	        <img src="https://img.icons8.com/pastel-glyph/2x/image-file.png" alt="파일타입 이미지" class="image">
+  	      </div>
+  	      <div class="details">
+  	        <header class="header">
+  	          <span class="name">${file.name}</span>
+  	          <span class="size">${file.size}</span>
+  	        </header>
+  	        <div class="progress">
+  	          <div class="bar"></div>
+  	        </div>
+  	        <div class="status">
+  	          <span class="percent">100% done</span>
+  	          <span class="speed">90KB/sec</span>
+  	        </div>
+  	      </div>
+  	    `;
+  	    return fileDOM;
+  	  }
+
+  	  dropArea.addEventListener("dragenter", highlight, false);
+  	  dropArea.addEventListener("dragover", highlight, false);
+  	  dropArea.addEventListener("dragleave", unhighlight, false);
+  	  dropArea.addEventListener("drop", handleDrop, false);
+
+  	  return {
+  	    handleFiles
+  	  };
+  	}
+
+  	const dropFile = new DropFile("drop-file", "files");
+
   </script>
 
 
  	<script th:inline="javascript">
- 	
 	
 	$(document).ready(function(){
     	var errorMessage = [[${errorMessage}]];
     	if(errorMessage != null){
         	alert(errorMessage);
     	}
-    	
     	//처음페이지 들어왔을때 이벤트가 실행될 수 있도록 만든다
     	$("#price").trigger("keyup"); 
     	
 		bindDomEvent(); //이벤트를 등록
+
 	});
 	
 	//천단위 콤마찍는 함수
@@ -199,13 +505,12 @@
 	
 	//상품등록 버튼을 누를때 천단위 콤마를 제거한후 전송한다
 	function beforeSubmit() {
-		const f = document.roomForm;
+		const f = document.roomtypeForm;
 		let price = f.price.value;
 		f.price.value = Number(price.replaceAll(',', ''));
 		
 		f.submit();
 	}
-	
 	//파일 첨부시 확장자가 이미지 파일인지 검사한다
     function bindDomEvent(){
         $(".custom-file-input").on("change", function() {
@@ -221,6 +526,7 @@
             $(this).siblings(".custom-file-label").html(fileName);
         });
     }
+
 	</script> 
 </th:block>
 </html>

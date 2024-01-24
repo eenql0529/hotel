@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/adminLayout}">
+<head>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<!-- 각 페이지의 CSS가 작성될 위치 -->
+<th:block layout:fragment="css">
+	<style>
+.dashboard-card{
+	display: flex;
+    padding: 20px !important;
+    justify-content: space-between;
+        margin: 0px 108px 0px 14px;
+	}
+.dashboard-card-title{
+    font-size: 14px;
+    font-weight: 600;
+    }
+.todayDate{
+    display: flex;
+    justify-content: center;
+    left: -71px;
+    position: relative;
+    align-items: center;
+}
+#todayButton{
+    font-weight: bold;
+    color: #494f56;
+    margin-left: 13px;
+    font-size: 17px;
+    cursor: pointer;
+    z-index: 10;
+    position: relative;
+    width: 60px;
+}
+
+#datePick{
+background: none;
+    border: none;
+    text-align: center;
+    width: 153px;
+}
+
+.dashboard-card3{
+	    min-height: 390px;
+}
+.chart-canvas{
+width:100%;
+}
+.bg-gradient-info,.progress{
+height:13px !important;
+
+}
+.justify-content-center{
+display: flex;
+justify-content:center;
+margin-bottom: 6px;
+}
+
+.detailTypeName{
+    margin-bottom: 0;
+    font-weight: 500;
+    font-size: 16px;
+}
+.detailCount{
+    margin: 0px;
+    font-size: 13px;
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+#progress-bar-container{
+display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.progressWrapper{
+display: flex;
+    flex-direction: row;
+    align-items: center;
+        justify-content: flex-end;
+}
+.progressBarRate{
+    margin: 0;
+    font-weight: 500;
+    margin-right: 10px;
+}
+.progress{
+width: 100%;
+}
+.progress-detail{
+width: 100px !important;
+}
+
+	</style>
+
+</th:block>
+</head>
+<div layout:fragment="content">
+
+    <div class="container-fluid py-4">
+      <div class="row">
+<div style="
+    display: flex;
+">
+    <div class="col-1" >
+        <p id="todayButton">TODAY</p>
+    </div>
+    <div class="col" >
+    <div class="todayDate"><svg id="left" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="
+    cursor: pointer;
+">
+    <g id="Bold-Outline" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="chevrons-left" fill-rule="nonzero" fill="#000000">
+            <path d="M6.02101273,12.28777 C6.08351721,13.030316 6.42107152,13.7508664 7.02345298,14.283377 L14.3376811,20.74922 C14.7514649,21.1150087 15.3834333,21.0761009 15.749222,20.662317 C16.1150107,20.2485331 16.0761028,19.6165647 15.6623189,19.250776 L8.34809088,12.784933 C7.93430699,12.4191444 7.89539917,11.787176 8.26118783,11.3733921 C8.28714161,11.3440329 8.31479867,11.3162246 8.34401591,11.2901112 L15.6663939,4.74559789 C16.0781773,4.3775587 16.1136391,3.74538755 15.7455999,3.33360412 C15.3775607,2.92182069 14.7453895,2.88635898 14.3336061,3.25439818 L7.01122808,9.79891146 C6.92357634,9.87725185 6.84060517,9.96067663 6.76274382,10.0487542 C6.36283349,10.5011369 6.12416322,11.0404491 6.0424032,11.5963631 C6.01514034,11.7198126 6,11.8563701 6,12 C6,12.1000336 6.00734409,12.1966366 6.02101273,12.28777 L6.02101273,12.28777 Z" id="shape"></path>
+        </g>
+    </g>
+</svg>
+       <!-- 날짜 선택을 위한 input 필드 -->
+<input type="text" id="datePick">
+        
+        <svg id="right"width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"style="
+    cursor: pointer;
+">
+    <g id="Bold-Outline" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="chevrons-right" fill-rule="nonzero" fill="#000000">
+            <path d="M8.33803136,4.749222 L15.659847,11.215065 C16.0740601,11.5808537 16.1130083,12.2128221 15.7468402,12.626606 C15.7208595,12.6559651 15.6931738,12.6837734 15.6639262,12.7098869 L8.33395217,19.2544001 C7.92174157,19.6224393 7.88624307,20.2546105 8.25466406,20.6663939 C8.62308505,21.0781773 9.255912,21.1136391 9.6681226,20.7455999 L16.9980966,14.2010866 C17.0858393,14.1227462 17.1688965,14.0393214 17.2468387,13.9512439 C18.345343,12.7098922 18.2284984,10.813987 16.985859,9.716621 L9.6640434,3.250778 C9.24983027,2.88498934 8.61720627,2.92389716 8.25103816,3.33768105 C7.88487005,3.75146494 7.92381823,4.38343335 8.33803136,4.749222 Z" id="shape"></path>
+        </g>
+    </g>
+</svg></div>
+    </div>
+</div>
+
+        <div class="">
+          <div class="card">
+            <div class="dashboard-card">
+
+              <div>
+                <p class="dashboard-card-title">체크인</p>
+                <div style="display: flex;"><h4 id="countCheckIn2" class=""></h4><h4 id="countCheckIn"class=""></h4> </div>
+              </div>
+                            <div class="">
+                <p class="dashboard-card-title">체크아웃</p>
+                <div style="display: flex;"><h4 id="countCheckOut2"class="" ></h4><h4 id="countCheckOut"class="" ></h4> </div>
+              </div>
+                            <div class="">
+                <p class="dashboard-card-title">남은 객실</p>
+                <div style="display: flex;"><h4 id="countStock" class=""></h4></div>
+              </div>
+                            <div class="">
+                <p class="dashboard-card-title">들어온 예약</p>
+                <div style="display: flex;"><h4 id="countReservationToday"class="" ></h4></div>
+              </div>
+                            <div class="">
+                <p class="dashboard-card-title">취소된 예약</p>
+                <div style="display: flex;"><h4 id="countCanceledReservationToday"class="" ></h4></div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-lg-4 col-md-6 mt-4 mb-4">
+          <div class="card z-index-2 dashboard-card3">
+            <div class="card-body">
+              <h6 class="mb-0 ">예상 거래액</h6>
+                <div class="chart">
+                  <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
+                </div>
+              <hr class="dark horizontal">
+              <div class="d-flex ">
+                <i class="material-icons text-sm my-auto me-1">schedule</i>
+                <p class="mb-0 text-sm"> campaign sent 2 days ago </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 mt-4 mb-3">
+          <div class="card z-index-2 dashboard-card3">
+
+
+
+            <div class="card-body">
+            <div>              <h6 class="mb-0 ">객실 점유율</h6>
+              <p class="text-sm ">Last Campaign Performance</p>
+              </div>
+				<div>
+                    <td class="align-middle">
+                        <div class="progress-wrapper mx-auto">
+                          <div class="progress-info">
+                            <div class="progress-percentage justify-content-center">
+                              <span id="rate-text" class="text-xs font-weight-bold" style="font-size:25px !important;"></span>
+                            </div>
+                          </div>
+                          <div class="progress">
+                            <div id="occupancyProgressBar" class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                        </div>
+                      </td>
+                     </div>
+              <hr class="dark horizontal">
+              <div class="row" style="
+    margin-top: 30px;
+">
+              <div id="progress-bar-detail" class="col">
+              </div>
+              <div id="progress-bar-container" class="col">
+    <!-- Progress bars will be dynamically added here -->
+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 mt-4 mb-3">
+          <div class="card z-index-2 dashboard-card3">
+            
+
+
+            <div class="card-body">
+              <h6 class="mb-0 ">Completed Tasks</h6>
+              <p class="text-sm ">Last Campaign Performance</p>
+              <hr class="dark horizontal">
+              <div class="d-flex ">
+                <i class="material-icons text-sm my-auto me-1">schedule</i>
+                <p class="mb-0 text-sm">just updated</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-4">
+        <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
+          <div class="card">
+            <div class="card-header pb-0">
+              <div class="row">
+                <div class="col-lg-6 col-7">
+                  <h6>Projects</h6>
+                  <p class="text-sm mb-0">
+                    <i class="fa fa-check text-info" aria-hidden="true"></i>
+                    <span class="font-weight-bold ms-1">30 done</span> this month
+                  </p>
+                </div>
+                <div class="col-lg-6 col-5 my-auto text-end">
+                  <div class="dropdown float-lg-end pe-4">
+                    <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fa fa-ellipsis-v text-secondary"></i>
+                    </a>
+                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                      <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a></li>
+                      <li><a class="dropdown-item border-radius-md" href="javascript:;">Another action</a></li>
+                      <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else here</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Companies</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Members</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Budget</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Completion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img src="../img/small-logos/logo-xd.svg" class="avatar avatar-sm me-3" alt="xd">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">Material XD Version</h6>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="avatar-group mt-2">
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ryan Tompson">
+                            <img src="../img/team-1.jpg" alt="team1">
+                          </a>
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Romina Hadid">
+                            <img src="../img/team-2.jpg" alt="team2">
+                          </a>
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Alexander Smith">
+                            <img src="../img/team-3.jpg" alt="team3">
+                          </a>
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Jessica Doe">
+                            <img src="../img/team-4.jpg" alt="team4">
+                          </a>
+                        </div>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                        <span class="text-xs font-weight-bold"> $14,000 </span>
+                      </td>
+                      <td class="align-middle">
+                        <div class="progress-wrapper w-75 mx-auto">
+                          <div class="progress-info">
+                            <div class="progress-percentage">
+                              <span class="text-xs font-weight-bold">60%</span>
+                            </div>
+                          </div>
+                          <div class="progress">
+                            <div class="progress-bar bg-gradient-info w-60" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img src="../img/small-logos/logo-atlassian.svg" class="avatar avatar-sm me-3" alt="atlassian">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">Add Progress Track</h6>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="avatar-group mt-2">
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Romina Hadid">
+                            <img src="../img/team-2.jpg" alt="team5">
+                          </a>
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Jessica Doe">
+                            <img src="../img/team-4.jpg" alt="team6">
+                          </a>
+                        </div>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                        <span class="text-xs font-weight-bold"> $3,000 </span>
+                      </td>
+                      <td class="align-middle">
+                        <div class="progress-wrapper w-75 mx-auto">
+                          <div class="progress-info">
+                            <div class="progress-percentage">
+                              <span class="text-xs font-weight-bold">10%</span>
+                            </div>
+                          </div>
+                          <div class="progress">
+                            <div class="progress-bar bg-gradient-info w-10" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img src="../img/small-logos/logo-slack.svg" class="avatar avatar-sm me-3" alt="team7">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">Fix Platform Errors</h6>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="avatar-group mt-2">
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Romina Hadid">
+                            <img src="../img/team-3.jpg" alt="team8">
+                          </a>
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Jessica Doe">
+                            <img src="../img/team-1.jpg" alt="team9">
+                          </a>
+                        </div>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                        <span class="text-xs font-weight-bold"> Not set </span>
+                      </td>
+                      <td class="align-middle">
+                        <div class="progress-wrapper w-75 mx-auto">
+                          <div class="progress-info">
+                            <div class="progress-percentage">
+                              <span class="text-xs font-weight-bold">100%</span>
+                            </div>
+                          </div>
+                          <div class="progress">
+                            <div class="progress-bar bg-gradient-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img src="../img/small-logos/logo-spotify.svg" class="avatar avatar-sm me-3" alt="spotify">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">Launch our Mobile App</h6>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="avatar-group mt-2">
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ryan Tompson">
+                            <img src="../img/team-4.jpg" alt="user1">
+                          </a>
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Romina Hadid">
+                            <img src="../img/team-3.jpg" alt="user2">
+                          </a>
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Alexander Smith">
+                            <img src="../img/team-4.jpg" alt="user3">
+                          </a>
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Jessica Doe">
+                            <img src="../img/team-1.jpg" alt="user4">
+                          </a>
+                        </div>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                        <span class="text-xs font-weight-bold"> $20,500 </span>
+                      </td>
+                      <td class="align-middle">
+                        <div class="progress-wrapper w-75 mx-auto">
+                          <div class="progress-info">
+                            <div class="progress-percentage">
+                              <span class="text-xs font-weight-bold">100%</span>
+                            </div>
+                          </div>
+                          <div class="progress">
+                            <div class="progress-bar bg-gradient-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img src="../img/small-logos/logo-jira.svg" class="avatar avatar-sm me-3" alt="jira">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">Add the New Pricing Page</h6>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="avatar-group mt-2">
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ryan Tompson">
+                            <img src="../img/team-4.jpg" alt="user5">
+                          </a>
+                        </div>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                        <span class="text-xs font-weight-bold"> $500 </span>
+                      </td>
+                      <td class="align-middle">
+                        <div class="progress-wrapper w-75 mx-auto">
+                          <div class="progress-info">
+                            <div class="progress-percentage">
+                              <span class="text-xs font-weight-bold">25%</span>
+                            </div>
+                          </div>
+                          <div class="progress">
+                            <div class="progress-bar bg-gradient-info w-25" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="25"></div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img src="../img/small-logos/logo-invision.svg" class="avatar avatar-sm me-3" alt="invision">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">Redesign New Online Shop</h6>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="avatar-group mt-2">
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ryan Tompson">
+                            <img src="../img/team-1.jpg" alt="user6">
+                          </a>
+                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Jessica Doe">
+                            <img src="../img/team-4.jpg" alt="user7">
+                          </a>
+                        </div>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                        <span class="text-xs font-weight-bold"> $2,000 </span>
+                      </td>
+                      <td class="align-middle">
+                        <div class="progress-wrapper w-75 mx-auto">
+                          <div class="progress-info">
+                            <div class="progress-percentage">
+                              <span class="text-xs font-weight-bold">40%</span>
+                            </div>
+                          </div>
+                          <div class="progress">
+                            <div class="progress-bar bg-gradient-info w-40" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="40"></div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="card h-100">
+            <div class="card-header pb-0">
+              <h6>Orders overview</h6>
+              <p class="text-sm">
+                <i class="fa fa-arrow-up text-success" aria-hidden="true"></i>
+                <span class="font-weight-bold">24%</span> this month
+              </p>
+            </div>
+            <div class="card-body p-3">
+              <div class="timeline timeline-one-side">
+                <div class="timeline-block mb-3">
+                  <span class="timeline-step">
+                    <i class="material-icons text-success text-gradient">notifications</i>
+                  </span>
+                  <div class="timeline-content">
+                    <h6 class="text-dark text-sm font-weight-bold mb-0">$2400, Design changes</h6>
+                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">22 DEC 7:20 PM</p>
+                  </div>
+                </div>
+                <div class="timeline-block mb-3">
+                  <span class="timeline-step">
+                    <i class="material-icons text-danger text-gradient">code</i>
+                  </span>
+                  <div class="timeline-content">
+                    <h6 class="text-dark text-sm font-weight-bold mb-0">New order #1832412</h6>
+                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">21 DEC 11 PM</p>
+                  </div>
+                </div>
+                <div class="timeline-block mb-3">
+                  <span class="timeline-step">
+                    <i class="material-icons text-info text-gradient">shopping_cart</i>
+                  </span>
+                  <div class="timeline-content">
+                    <h6 class="text-dark text-sm font-weight-bold mb-0">Server payments for April</h6>
+                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">21 DEC 9:34 PM</p>
+                  </div>
+                </div>
+                <div class="timeline-block mb-3">
+                  <span class="timeline-step">
+                    <i class="material-icons text-warning text-gradient">credit_card</i>
+                  </span>
+                  <div class="timeline-content">
+                    <h6 class="text-dark text-sm font-weight-bold mb-0">New card added for order #4395133</h6>
+                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">20 DEC 2:20 AM</p>
+                  </div>
+                </div>
+                <div class="timeline-block mb-3">
+                  <span class="timeline-step">
+                    <i class="material-icons text-primary text-gradient">key</i>
+                  </span>
+                  <div class="timeline-content">
+                    <h6 class="text-dark text-sm font-weight-bold mb-0">Unlock packages for development</h6>
+                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">18 DEC 4:54 AM</p>
+                  </div>
+                </div>
+                <div class="timeline-block">
+                  <span class="timeline-step">
+                    <i class="material-icons text-dark text-gradient">payments</i>
+                  </span>
+                  <div class="timeline-content">
+                    <h6 class="text-dark text-sm font-weight-bold mb-0">New order #9583120</h6>
+                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">17 DEC</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="footer py-4  ">
+        <div class="container-fluid">
+          <div class="row align-items-center justify-content-lg-between">
+            <div class="col-lg-6 mb-lg-0 mb-4">
+              <div class="copyright text-center text-sm text-muted text-lg-start">
+                © <script>
+                  document.write(new Date().getFullYear())
+                </script>,
+                made with <i class="fa fa-heart"></i> by
+                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
+                for a better web.
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+                </li>
+                <li class="nav-item">
+                  <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+</div>
+  <!-- 각 페이지의 스크립트가 작성될 위치 -->
+	<th:block layout:fragment="script">
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<script th:inline="javascript">
+	
+	function drawPercentageStackedBar(rate) {
+	  var occupancyRate = rate;
+
+	  // Update progress bar with the new value
+	  var progressBar = document.getElementById("occupancyProgressBar");
+	  progressBar.style.width = occupancyRate + "%";
+	  progressBar.setAttribute("aria-valuenow", occupancyRate);
+	}
+
+	function drawOccupancyRateProgressBar(data) {
+	    var progressBarContainer = document.getElementById('progress-bar-container');
+	    var progressBarDetail = document.getElementById('progress-bar-detail');
+	    progressBarContainer.innerHTML = '';
+	    progressBarDetail.innerHTML = '';
+	    
+	    for (var i = 0; i < data.length; i++) {
+	        var typeId = data[i].typeId;
+	        var count = data[i].count;
+	        var occupancyRate = data[i].occupancyRate;
+
+	        var progressWrapper = document.createElement('div');
+	        progressWrapper.className = 'progressWrapper';
+	        var progress = document.createElement('div');
+	        progress.className = 'progress progress-detail';
+	        // Create a progress bar for each item in the data
+	        var progressBar = document.createElement('div');
+	        var progressBarRate = document.createElement('p')
+	        progressBar.className = 'progress-bar bg-gradient-info'; 
+	        progressBar.style.width = occupancyRate + '%';
+	        progressBarRate.className = 'progressBarRate';
+	        progressBarRate.textContent = occupancyRate + '%'; // 비율
+	        progressBar.setAttribute('aria-valuenow', occupancyRate);
+
+	        // Append the progress bar to the wrapper
+	        progress.appendChild(progressBar);
+	        progressWrapper.appendChild(progressBarRate);
+	        progressWrapper.appendChild(progress);
+
+	        // Append the wrapped progress bar to the container
+	        progressBarContainer.appendChild(progressWrapper);
+
+	        var detailWrapper = document.createElement('div');
+	        var detailTypeName = document.createElement('p');
+	        var detailCount = document.createElement('p');
+	        detailWrapper.className ='detailWrapper';
+	        detailTypeName.className ='detailTypeName';
+	        detailCount.className ='detailCount';
+	        detailTypeName.textContent = typeId; // 타입 이름
+	        detailCount.textContent = count + '건'; // 건수
+	        progressBarDetail.appendChild(detailWrapper);
+	        detailWrapper.appendChild(detailTypeName);
+	        detailWrapper.appendChild(detailCount);
+	    }
+	}
+
+
+
+
+    function updateDashboard(selectedDate) {
+        fetch('/admin/dashboard?selectedDate=' + selectedDate)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('대시보드 업데이트 실패');
+                }
+                return response.json();
+            })
+            .then(data => {
+
+
+                // 서버에서 가져온 데이터를 사용하여 대시보드를 업데이트하는 로직 작성
+                updateDashboardWithData(data);
+
+            })
+            .catch(error => {
+                console.error('대시보드 업데이트 오류: ', error);
+            });
+    }
+
+
+
+  
+
+    function updateDashboardWithData(data) {
+        // 여러 엘리먼트 업데이트
+        updateElementContent('#countCheckIn', data.countCheckIn );
+        updateElementContent('#countCheckIn2', data.countCheckIn2 + "/");
+        updateElementContent('#countCheckOut', data.countCheckOut );
+        updateElementContent('#countCheckOut2', data.countCheckOut2 + "/");
+        updateElementContent('#countStock', data.countStock);
+        updateElementContent('#countReservationToday', data.countReservationToday);
+        updateElementContent('#countCanceledReservationToday', data.countCanceledReservationToday);
+        updateElementContent('#rate-text', data.calculateOccupancyRate + "%");
+        drawPercentageStackedBar(data.calculateOccupancyRate);
+        drawOccupancyRateProgressBar(data.calculateRate);
+    }
+
+    function updateElementContent(selector, content) {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.textContent = content;
+        }
+    }
+    $(function () {
+        // datepicker 초기화
+        $("#datePick").datepicker({
+            dateFormat: "yy년 mm월 dd일",
+            showOtherMonths: true,
+            showMonthAfterYear: true,
+            changeYear: true,
+            changeMonth: true,
+            closeText: '닫기',
+            dayNamesMin: ['일','월','화','수','목','금','토'],
+            monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+            onSelect: function (dateText, inst) {
+                // 선택된 날짜를 컨트롤러로 전달
+                updateDashboard(dateText);
+                
+                
+            }
+        });
+        
+
+
+        // 오늘 날짜로 대시보드 초기화
+        initializeDashboardWithToday();
+
+        // 왼쪽과 오른쪽 화살표 클릭 이벤트
+        $("#left").on("click", function () {
+            updateDate(-1);
+        });
+
+        $("#right").on("click", function () {
+            updateDate(1);
+        });
+
+
+        function updateDate(daysToAdd) {
+            var selectedDate = $("#datePick").datepicker("getDate");
+            selectedDate.setDate(selectedDate.getDate() + daysToAdd);
+            $("#datePick").datepicker("setDate", selectedDate);
+            updateDashboard(formatDate(selectedDate));
+        }
+        function initializeDashboardWithToday() {
+            var today = new Date();
+            var formattedDate = formatDate(today);
+            $("#datePick").val(formattedDate);
+            // 초기화시 오늘 날짜로 대시보드 업데이트
+            updateDashboard(formattedDate);
+
+        }
+
+        // TODAY 버튼 클릭 이벤트
+        $("#todayButton").on("click", function () {
+            // 오늘 날짜로 대시보드 업데이트
+            initializeDashboardWithToday();
+        });
+
+        function formatDate(date) {
+            return date.getFullYear() + '년 ' + (date.getMonth() + 1) + '월 ' + date.getDate() + '일';
+        }
+    });
+    
+</script>
+	</th:block>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<title>아아마이크테스트아아</title>
+<head>
+    <style>
+        /* 스타일링은 여기에 추가 */
+        .active-menu {
+            background-color: #3498db; /* 선택한 메뉴의 배경색 */
+            color: #fff; /* 선택한 메뉴의 글자색 */
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <!-- 사이드바 메뉴 항목들을 여기에 추가 -->
+    <a href="#" class="menu-item" data-menu="menu1">메뉴 1</a>
+    <a href="#" class="menu-item" data-menu="menu2">메뉴 2</a>
+    <a href="#" class="menu-item" data-menu="menu3">메뉴 3</a>
+</aside>
+
+<div class="content">
+    <!-- 각 페이지의 내용을 여기에 추가 -->
+    <h1>페이지 제목</h1>
+    <p>페이지 내용</p>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const menuItems = document.querySelectorAll('.menu-item');
+
+        // 페이지 로딩 시 저장된 상태 읽어와서 메뉴에 적용
+        const activeMenu = localStorage.getItem('activeMenu');
+        if (activeMenu) {
+            setActiveMenu(activeMenu);
+        }
+
+        // 각 메뉴 클릭 시 이벤트 핸들러 등록
+        menuItems.forEach(function (menuItem) {
+            menuItem.addEventListener('click', function () {
+                const menuName = menuItem.getAttribute('data-menu');
+                setActiveMenu(menuName);
+            });
+        });
+
+        // 메뉴 상태를 저장하고 해당 메뉴에 클래스 적용하는 함수
+        function setActiveMenu(menuName) {
+            // 저장
+            localStorage.setItem('activeMenu', menuName);
+
+            // 모든 메뉴에서 클래스 제거
+            menuItems.forEach(function (item) {
+                item.classList.remove('active-menu');
+            });
+
+            // 선택한 메뉴에 클래스 추가
+            const selectedMenu = document.querySelector('.menu-item[data-menu="' + menuName + '"]');
+            if (selectedMenu) {
+                selectedMenu.classList.add('active-menu');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="../img/apple-icon.png">
+  <link rel="icon" type="image/png" href="../img/favicon.png">
+      <meta name="description" content="Sona Template">
+    <meta name="keywords" content="Sona, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>
+    admin
+  </title>
+  
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+  	<!-- suit 한글 폰트  -->
+	<link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css" rel="stylesheet">
+  	<style>
+     body {font-family: 'SUIT' !important;}
+     h3 {font-family: 'SUIT' !important;}
+     .contents{font-family: 'SUIT' !important;}
+.active-menu {
+            background-color: #3498db; /* 선택한 메뉴의 배경색 */
+            color: #fff; /* 선택한 메뉴의 글자색 */
+        }
+    .collapse-menu[data-bs-toggle="collapse"]:after{
+     display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 700;
+    content: "\f107";
+    margin-left: auto;
+    color: rgba(206, 212, 218, 0.7);
+    transition: all 0.2s ease-in-out;
+     }
+     .collapse-menu[data-bs-toggle="collapse"][aria-expanded="true"]:after{
+         color: #CED4DA;
+    transform: rotate(180deg);
+     }
+     
+     .collapse-menu{
+         padding: 12px 16px;
+    margin: 0 1rem;
+    margin-bottom: 1.5px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+     }
+     
+     .collapse-text{
+         font-size: 15px;
+    font-weight: 400;
+    color: #6c757d;
+    margin: 0;
+    font-family: suit;
+     }
+     
+</style>
+	<!--icon  -->
+<link rel="stylesheet" th:href="@{https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200}" />
+<link rel="stylesheet" th:href="@{https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,-25}" />
+    <!-- Css Styles -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/elegant-icons.css}" type="text/css">
+    <link rel="stylesheet"th:href="@{/css/flaticon.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/nice-select.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/jquery-ui.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/magnific-popup.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/slicknav.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
+	
+	
+    <!--     Fonts and icons     -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+  <!-- Nucleo Icons -->
+  <link th:href="@{/css/nucleo-icons.css}" rel="stylesheet" />
+  <link th:href="@{/css/nucleo-svg.css}" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <!-- CSS Files -->
+  <link id="pagestyle" th:href="@{/css/material-dashboard.css?v=3.1.0}" rel="stylesheet" />
+  <!-- Nepcha Analytics (nepcha.com) -->
+  <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
+  <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+  
+</head>
+<body class="g-sidenav-show  bg-gray-200">
+
+<div th:replace="fragments/adminSidebar::adminSidebar"></div>
+		<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+<nav th:replace="fragments/adminHeader::adminHeader"></nav>
+		  <div layout:fragment="content"></div>
+		  </main>		  
+		  <div class="fixed-plugin">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
+      <i class="material-icons py-2">settings</i>
+    </a>
+    <div class="card shadow-lg">
+      <div class="card-header pb-0 pt-3">
+        <div class="float-start">
+          <h5 class="mt-3 mb-0">Material UI Configurator</h5>
+          <p>See our dashboard options.</p>
+        </div>
+        <div class="float-end mt-4">
+          <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
+            <i class="material-icons">clear</i>
+          </button>
+        </div>
+        <!-- End Toggle Button -->
+      </div>
+      <hr class="horizontal dark my-1">
+      <div class="card-body pt-sm-3 pt-0">
+        <!-- Sidebar Backgrounds -->
+        <div>
+          <h6 class="mb-0">Sidebar Colors</h6>
+        </div>
+        <a href="javascript:void(0)" class="switch-trigger background-color">
+          <div class="badge-colors my-2 text-start">
+            <span class="badge filter bg-gradient-primary active" data-color="primary" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-dark" data-color="dark" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-success" data-color="success" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-warning" data-color="warning" onclick="sidebarColor(this)"></span>
+            <span class="badge filter bg-gradient-danger" data-color="danger" onclick="sidebarColor(this)"></span>
+          </div>
+        </a>
+        <!-- Sidenav Type -->
+        <div class="mt-3">
+          <h6 class="mb-0">Sidenav Type</h6>
+          <p class="text-sm">Choose between 2 different sidenav types.</p>
+        </div>
+        <div class="d-flex">
+          <button class="btn bg-gradient-dark px-3 mb-2 active" data-class="bg-gradient-dark" onclick="sidebarType(this)">Dark</button>
+          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-transparent" onclick="sidebarType(this)">Transparent</button>
+          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-white" onclick="sidebarType(this)">White</button>
+        </div>
+        <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
+        <!-- Navbar Fixed -->
+        <div class="mt-3 d-flex">
+          <h6 class="mb-0">Navbar Fixed</h6>
+          <div class="form-check form-switch ps-0 ms-auto my-auto">
+            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
+          </div>
+        </div>
+        <hr class="horizontal dark my-3">
+        <div class="mt-2 d-flex">
+          <h6 class="mb-0">Light / Dark</h6>
+          <div class="form-check form-switch ps-0 ms-auto my-auto">
+            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version" onclick="darkMode(this)">
+          </div>
+        </div>
+        <hr class="horizontal dark my-sm-4">
+        <a class="btn bg-gradient-info w-100" href="https://www.creative-tim.com/product/material-dashboard-pro">Free Download</a>
+        <a class="btn btn-outline-dark w-100" href="https://www.creative-tim.com/learning-lab/bootstrap/overview/material-dashboard">View documentation</a>
+        <div class="w-100 text-center">
+          <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
+          <h6 class="mt-3">Thank you for sharing!</h6>
+          <a href="https://twitter.com/intent/tweet?text=Check%20Material%20UI%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
+            <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/material-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
+            <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script>
+		
+		 document.addEventListener("DOMContentLoaded", function () {
+		        const menuItems = document.querySelectorAll('.nav-link');
+
+		        // 페이지 로딩 시 저장된 상태 읽어와서 메뉴에 적용
+		        const activeMenu = localStorage.getItem('activeMenu');
+		        if (activeMenu) {
+		            setActiveMenu(activeMenu);
+		        }
+
+		        // 각 메뉴 클릭 시 이벤트 핸들러 등록
+		        menuItems.forEach(function (menuItem) {
+		            menuItem.addEventListener('click', function () {
+		                const menuName = menuItem.getAttribute('data-menu');
+		                setActiveMenu(menuName);
+		            });
+		        });
+
+		        // 메뉴 상태를 저장하고 해당 메뉴에 클래스 적용하는 함수
+		        function setActiveMenu(menuName) {
+		            // 저장
+		            localStorage.setItem('activeMenu', menuName);
+
+		            // 모든 메뉴에서 클래스 제거
+		            menuItems.forEach(function (item) {
+		                item.classList.remove('active-menu');
+		            });
+
+		            // 선택한 메뉴에 클래스 추가
+		            const selectedMenu = document.querySelector('.nav-link[data-menu="' + menuName + '"]');
+		            if (selectedMenu) {
+		                selectedMenu.classList.add('active-menu');
+		            }
+		        }
+		    });
+		
+   
+    
+    var ctx = document.getElementById("chart-bars").getContext("2d");
+
+    new Chart(ctx, {
+      type: "doughnut",
+      data: {
+    	  labels: ["예상 거래액","결제대기금액"],
+        datasets: [{
+          tension: 0.4,
+          borderWidth: 0,
+          borderRadius: 4,
+          borderSkipped: false,
+          backgroundColor: ["rgba(255, 255, 255, .8)",'rgb(54, 162, 235)'],
+          data: [30000,5000],  // 예상 거래액 값
+          maxBarThickness: 6
+        }, ],
+      },
+      options: {
+    	  cutout: '75%',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+
+
+      },
+    });
+
+
+
+    var win = navigator.platform.indexOf('Win') > -1;
+    if (win && document.querySelector('#sidenav-scrollbar')) {
+      var options = {
+        damping: '0.5'
+      }
+      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    }
+  </script>
+
+
+<!-- 공통으로 쓰이는 js  -->
+
+  <!--스와이퍼  -->
+	  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    <!--   Core JS Files   -->
+  <script th:src="@{/js/core/popper.min.js}"></script>
+  <script th:src="@{/js/core/bootstrap.min.js}"></script>
+  <script th:src="@{/js/plugins/perfect-scrollbar.min.js}"></script>
+  <script th:src="@{/js/plugins/smooth-scrollbar.min.js}"></script>
+  <script th:src="@{/js/plugins/chartjs.min.js}"></script>
+  
+      <!-- Js Plugins -->
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script> 
+    <script th:src="@{/js/jquery.magnific-popup.min.js}"></script>
+    <script th:src="@{/js/jquery.nice-select.min.js}"></script>
+    <script th:src="@{/js/jquery-ui.min.js}"></script>
+    <script th:src="@{/js/jquery.slicknav.js}"></script>
+    <script th:src="@{/js/owl.carousel.min.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+  
+  
+  <!-- Github buttons -->
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+  <script th:src="@{/js/material-dashboard.min.js?v=3.1.0}"></script>
+  
+  <!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- 각 페이지의 스크립트가 작성될 위치 -->
+	<th:block layout:fragment="script"></th:block>
+</body>
+</html>

@@ -83,7 +83,6 @@ public class ReservationService {
 
             while (!startDate.isAfter(endDate)) {
                 Inventory inventory = inventoryRepository.findByDateAndRoomType(startDate.toString(), roomType);
-                System.out.println(inventory);
                 if (inventory != null && inventory.getStock() > 0) {
                     inventory.setStock(inventory.getStock() - 1); // 재고 감소
                     inventoryRepository.save(inventory);

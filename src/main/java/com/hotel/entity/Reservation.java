@@ -34,7 +34,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @Configuration
-public class Reservation {
+public class Reservation extends BaseEntity {
 
 	@Id
 	@Column(name="reservation_id")
@@ -79,7 +79,7 @@ public class Reservation {
 		reservation.setCount(reserveDto.getCount());
 		reservation.setGuest(reserveDto.getGuest());
 		reservation.setTotalPrice(roomType.getPrice()*reserveDto.getCount());
-		reservation.setRsStatus(ReservationStatus.WAITING);
+		reservation.setRsStatus(ReservationStatus.RESERVATION);
 		reservation.setReserveDate(LocalDateTime.now());
 
 		
@@ -97,23 +97,23 @@ public class Reservation {
 	
 	//예약 취소
 	public void cancelReserve() {
-		this.rsStatus = ReservationStatus.CANCELED;
+		this.rsStatus = ReservationStatus.CANCEL;
 		
 	}
 	
-	//예약 업데이트
-	public void updateReservation(ReservationStatus rsStatus) {
-		this.rsStatus = rsStatus;
-		if(rsStatus == rsStatus.DELETED) {
-
-		}
-	}
-	//예약 업데이트
-	public void updateReservation2(ReserveDto reserveDto) {
-		this.rsStatus = reserveDto.getRsStatus();
-		if(rsStatus == rsStatus.DELETED) {
-
-		}
-	}
+//	//예약 업데이트
+//	public void updateReservation(ReservationStatus rsStatus) {
+//		this.rsStatus = rsStatus;
+//		if(rsStatus == rsStatus.DELETED) {
+//
+//		}
+//	}
+//	//예약 업데이트
+//	public void updateReservation2(ReserveDto reserveDto) {
+//		this.rsStatus = reserveDto.getRsStatus();
+//		if(rsStatus == rsStatus.DELETED) {
+//
+//		}
+//	}
 	
 }

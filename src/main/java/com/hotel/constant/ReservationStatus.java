@@ -6,10 +6,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ReservationStatus {
-	WAITING("대기")
-	,CONFIRMED("확정")
-	,CANCELED("취소")
-	,DELETED("삭제");
+	RESERVATION("예약")
+	,CHECK_IN("체크인")
+	,CHECK_OUT("체크아웃")
+	,CANCEL("삭제")
+	,NO_SHOW("노쇼");
 	
 	
 	private final String desc;

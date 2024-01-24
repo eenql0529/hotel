@@ -1,16 +1,25 @@
 package com.hotel.controller;
 
-import java.awt.print.Pageable;
 import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +36,11 @@ import com.hotel.dto.ReserveDto;
 import com.hotel.dto.RoomFormDto;
 import com.hotel.dto.RoomImgDto;
 import com.hotel.dto.RoomTypeListDto;
+import com.hotel.dto.RoomtypeSearchDto;
+import com.hotel.entity.Reservation;
 import com.hotel.entity.RoomType;
+import com.hotel.repository.InventoryRepository;
+import com.hotel.repository.ReserveRepository;
 import com.hotel.repository.RoomRepository;
 import com.hotel.service.AdminService;
 import com.hotel.service.ReservationService;
@@ -44,42 +57,115 @@ public class AdminController {
 	private final AdminService adminService;
 	private final RoomService roomService;
 	private final RoomRepository roomRepository;
+	private final ReserveRepository reserveRepository;
+	private final InventoryRepository inventoryRepository;
 
-	// 객실관리
-	@GetMapping(value = "/admin/room")
-	public String roomMng(Model model) {
+	
+	@GetMapping("/test")
+	public String test() {
+		
+		return "/admin/test";
+		
+	}
+	@GetMapping("/admin")
+	public String admin2(
+	        @RequestParam(name = "selectedDate", required = false) String selectedDate,
+	        Model model) {
+	    // 선택된 날짜를 기반으로 필요한 업데이트 수행
+	    adminService.updateInventory();
+	    
 
-		// of(조회할 페이지의 번호 ★0부터 시작, 한페이지당 조회할 데이터 갯수)
-		// url경로에 페이지가 있으면 해당 페이지 번호를 조회하도록 하고 페이지 번호가 없으면 0페이지를 조회
+	    // selectedDate가 비어 있다면 오늘 날짜로 설정
+	    if (selectedDate == null || selectedDate.isEmpty()) {
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");
+	        selectedDate = dateFormat.format(new Date());
+	    }
+	 
 
+
+	    return "admin/admin";
+	}
+	
+	@ResponseBody
+	@GetMapping("/admin/dashboard")
+	public Map<String, Object> admin(
+			@RequestParam(name = "selectedDate", required = false) String selectedDate,
+			Model model) {
+		System.out.println(selectedDate);
+	    // selectedDate가 비어 있다면 오늘 날짜로 설정ss
+	    if (selectedDate == null || selectedDate.isEmpty()) {
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");
+	        selectedDate = dateFormat.format(new Date());
+	        
+	        
+	    }
+		// 모델에 업데이트된 데이터 추가
+		Map<String, Object> responseData = new HashMap<>();
+		responseData.put("selectedDate", selectedDate);
+		responseData.put("countCheckIn", reserveRepository.countCheckInToday(selectedDate));
+		responseData.put("countCheckIn2", reserveRepository.countRsStatusCheckInToday(selectedDate));
+		responseData.put("countCheckOut", reserveRepository.countCheckOutToday(selectedDate));
+		responseData.put("countCheckOut2", reserveRepository.countRsStatusCheckOutToday(selectedDate));
+		responseData.put("countStock", inventoryRepository.countStockToday(selectedDate));
+		responseData.put("countReservationToday", reserveRepository.countReservationToday(selectedDate));
+		responseData.put("countCanceledReservationToday", reserveRepository.countCanceledReservationToday(selectedDate));
+		responseData.put("calculateOccupancyRate", reserveRepository.calculateOccupancyRate(selectedDate));
+
+		 // calculateRate에서 반환되는 List<Object[]>를 Map에 추가
+	    List<Object[]> calculateRateResult = reserveRepository.calculateRate(selectedDate);
+	    List<Map<String, Object>> calculateRateList = new ArrayList<>();
+	    for (Object[] row : calculateRateResult) {
+	        Map<String, Object> rowMap = new HashMap<>();
+	        rowMap.put("typeId", row[0]);
+	        rowMap.put("count", row[1]);
+	        rowMap.put("occupancyRate", row[2]);
+	        calculateRateList.add(rowMap);
+	    }
+	    responseData.put("calculateRate", calculateRateList);
+		
+		return responseData;
+	}
+
+	
+
+
+	// 객실타입리스트
+	@GetMapping(value = {"/admin/roomtypeList","/admin/roomtypeList/{page}"})
+	public String roomtypeList(Model model) {
+
+		
+		
+		
 		List<RoomTypeListDto> roomType = adminService.getRoomTypeList();
 
-		model.addAttribute("roomType", roomType);
+		model.addAttribute("rooms",roomType);
+		
 
-		return "admin/roomMng";
+		return "admin/roomtypeList";
 	}
 
 	// 객실등록
-	@GetMapping(value = "/admin/room/new")
+	@GetMapping(value = "/admin/room")
 	public String roomForm(Model model) {
 		model.addAttribute("roomFormDto", new RoomFormDto());
-		return "admin/roomForm";
+		return "admin/roomtypeForm";
 	}
-
+	
+	
 	// 객실, 객실이미지 등록(insert)
 	@PostMapping(value = "/admin/room/new")
 	public String roomNew(@Valid RoomFormDto roomFormDto, BindingResult bindingResult, Model model,
 			@RequestParam("roomImgFile") List<MultipartFile> roomImgFileList) {
 
 		if (bindingResult.hasErrors()) {
-			return "admin/roomForm";
+			return "admin/roomtypeForm";
 
 		}
 
 		// 상품등록전에 첫번째 이미지가 있는지 없는지 검사(첫번째 이미지는 필수 입력값)
 		if (roomImgFileList.get(0).isEmpty()) {
 			model.addAttribute("errorMessage", "첫번째 상품 이미지는 필수입니다.");
-			return "admin/roomForm";
+			return "admin/roomtypeForm";
 		}
 
 		try {
@@ -88,7 +174,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMessage", "상품 등록 중 에러가 발생했습니다.");
-			return "admin/roomForm";
+			return "admin/roomtypeForm";
 		}
 
 		return "redirect:/";
@@ -101,6 +187,8 @@ public class AdminController {
 		try {
 			RoomFormDto roomFormDto = roomService.getRoomDtl(typeId);
 			model.addAttribute("roomFormDto", roomFormDto);
+			System.out.println("typeId:"+typeId);
+			System.out.println("roomFormDto.getBedType:"+roomFormDto.getBedType());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -108,25 +196,25 @@ public class AdminController {
 			// 에러발생시 비어있는 객체를 넘겨준다.
 			model.addAttribute("roomFormDto", new RoomFormDto());
 
-			return "admin/roomForm";
+			return "admin/roomtypeForm";
 		}
 
 		return "admin/roomModifyForm";
 	}
 
-	// 객실 수정(update)
+//	// 객실 수정(update)
 	@PostMapping(value = "/admin/room/{typeId}")
 	public String roomUpadate(@Valid RoomFormDto roomFormDto, Model model, BindingResult bindingResult,
 			@RequestParam("roomImgFile") List<MultipartFile> roomImgFileList) {
 
 		if (bindingResult.hasErrors()) {
-			return "admin/roomForm";
+			return "admin/roomtypeForm";
 		}
 
 		// 첫번째 이미지가 있는지 검사
 		if (roomImgFileList.get(0).isEmpty() && roomFormDto.getId() == null) {
 			model.addAttribute("errorMessage", "첫번째 객실 이미지는 필수입니다.");
-			return "admin/roomForm";
+			return "admin/roomtypeForm";
 
 		}
 
@@ -135,7 +223,7 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMessage", "객실 수정 중 에러가 발생했습니다.");
-			return "admin/roomForm";
+			return "admin/roomtypeForm";
 		}
 
 		return "redirect:/";

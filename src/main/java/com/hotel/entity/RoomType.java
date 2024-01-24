@@ -1,7 +1,6 @@
 package com.hotel.entity;
 
 
-import com.hotel.Exception.OutOfStockException;
 import com.hotel.constant.Availability;
 import com.hotel.dto.RoomFormDto;
 
@@ -35,8 +34,6 @@ public class RoomType extends BaseEntity {
 
 	private String typeName; // 객실타입명
 
-	private String location; // 위치
-
 	private String configuration; // 객실구성
 
 	private String bedType; // 침대타입
@@ -52,7 +49,7 @@ public class RoomType extends BaseEntity {
 
 	private int price; // 가격
 
-	private int capacity; // 수용인원
+	private int capacity; // 인원
 	
 	private String comment;  
 
@@ -70,7 +67,6 @@ public class RoomType extends BaseEntity {
 	//roomType 엔티티 수정
 	public void updateRoomType(RoomFormDto roomFormDto) {
 		this.typeName = roomFormDto.getTypeName();
-		this.location = roomFormDto.getLocation();
 		this.configuration = roomFormDto.getConfiguration();
 		this.bedType = roomFormDto.getBedType();
 		this.roomSize = roomFormDto.getRoomSize();

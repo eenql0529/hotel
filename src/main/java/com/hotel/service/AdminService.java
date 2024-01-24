@@ -1,14 +1,16 @@
 package com.hotel.service;
 
-import java.awt.print.Pageable;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.*;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.hotel.Exception.OutOfStockException;
 import com.hotel.constant.ReservationStatus;
 import com.hotel.dto.*;
 import com.hotel.entity.*;
@@ -25,6 +27,7 @@ public class AdminService {
 	private final RoomImgService roomImgService;
 	private final RoomImgRepository roomImgRepository;
 	private final ReserveRepository reserveRepository;
+	private final InventoryRepository inventoryRepository;
 	
 	//item 테이블에 상품등록(insert)
 	public Long saveRoom(RoomFormDto roomFormDto, List<MultipartFile> roomImgFileList) throws Exception {
@@ -147,12 +150,45 @@ public class AdminService {
 		/* ★★★ 한번 insert를 진행하면 엔티티가 영속성 컨텍스트에 저장이 되므로 
 		그 이후에는 변경감지 기능이 동작하기 때문에 개발자는 update쿼리문을 쓰지 않고
 		엔티티 데이터만 변경해주면 된다. */
-		reservation.updateReservation2(reserveDto);
+		
+//		reservation.updateReservation2(reserveDto);
 
 		return reservation.getId(); //변경한 roomType의 id 리턴 
 	}
 	
 	
 	
+	//오늘날짜 재고 업데이트
+public void updateInventory() {
+    // 현재 날짜 얻기
+    LocalDate currentDate = LocalDate.now();
+
+    // 모든 roomType 레코드 가져오기
+    List<RoomType> roomTypes = roomRepository.findAll();
+
+    for (RoomType roomType : roomTypes) {
+    	
+    	for(int i=0; i<30; i++) {
+    		
+    	LocalDate nextDays = currentDate.plusDays(i);
+        // 이미 해당 날짜의 재고가 있는지 확인
+        Inventory existingInventory = inventoryRepository.findByDateAndRoomType(nextDays.toString(), roomType);
+
+        if (existingInventory == null) {
+            // 해당 날짜의 재고가 없으면 새로 생성
+            Inventory newInventory = new Inventory();
+            newInventory.setDate(nextDays.toString());
+            newInventory.setRoomType(roomType);
+            newInventory.setStock(3); // 초기 재고 설정
+            inventoryRepository.save(newInventory);
+        }
+    	}
+    }
+}
+
+
 
 }
+	
+
+
