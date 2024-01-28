@@ -2,6 +2,8 @@
   
 ![최종로고2](https://github.com/eenql0529/hotel/assets/130886739/e203c988-2318-4f0b-99cf-760f603a8573)
 
+<br>
+
 <h2>🏨FAIRWEAVE HOTEL</h2>
 
 ### 주요 기능
@@ -13,7 +15,7 @@
 해당 날짜에 배정된 객실의 비중을 확인할 수 있습니다.<br>
 객실리스트, 고객리스트, 예약리스트, 문의리스트를 확인하고 추가,수정,삭제를 할 수 있습니다.<br>
 
-
+<br>
 
   <h2>:v:skills</h2>
 
@@ -28,12 +30,12 @@
 ![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![MySql](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
 
-
+<br>
   <h2>:speech_balloon:Link</h2>
 
 [**erdcloud**](https://www.erdcloud.com/d/hhKdRPXdyGPBh4ALC)
 
-[**Html템플릿**](https://themewagon.com/themes/free-bootstrap-4-html5-responsive-hotel-website-template-sona/)
+[**Html템플릿**](https://themewagon.com/themes/free-bootstrap-4-html5-responsive-hotel-website-template-sona/) <br>
 [**대시보드 템플릿**](https://www.creative-tim.com/product/material-dashboard)
 </div>
 
