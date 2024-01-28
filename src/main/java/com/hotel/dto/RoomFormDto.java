@@ -55,6 +55,8 @@ public class RoomFormDto {
 	
 	private List<Long> roomImgIds = new ArrayList<>();
 	
+	
+	
 	private static ModelMapper modelMapper = new ModelMapper();
 	
 	public RoomType createRoom() {

@@ -28,6 +28,8 @@ public class AdminService {
 	private final RoomImgRepository roomImgRepository;
 	private final ReserveRepository reserveRepository;
 	private final InventoryRepository inventoryRepository;
+	private final MemberRepository memberRepository;
+	private final ContactRepository contactRepository;
 	
 	//item 테이블에 상품등록(insert)
 	public Long saveRoom(RoomFormDto roomFormDto, List<MultipartFile> roomImgFileList) throws Exception {
@@ -91,6 +93,15 @@ public class AdminService {
 		roomRepository.delete(roomType);
 	}
 	
+	//문의삭제
+	public void deleteContact(Long contactId) {
+		
+		Contact contact = contactRepository.findById(contactId)
+				.orElseThrow(EntityNotFoundException::new);
+		
+		contactRepository.delete(contact);
+	}
+	
 	
 	
 	
@@ -99,6 +110,14 @@ public class AdminService {
 		List<RoomTypeListDto> roomTypeList = roomRepository.getRoomTypeList();
 		
 		return roomTypeList;
+	}
+	@Transactional(readOnly = true)
+	public List<Contact> getContactList() {
+		
+		List<Contact> contactList = contactRepository.getContactList();
+		
+		return contactList;
+		
 	}
 	
 	
@@ -124,6 +143,23 @@ public class AdminService {
 		}
 		
 		return reservationHistDtos;
+	}
+	
+	//고객리스트 관리
+	@Transactional(readOnly = true)
+	public List<MemberListDto> getMemberList(){
+		List<Member> members = memberRepository.getMemberList();
+		List<MemberListDto> memberListDtos = new ArrayList<>();
+		
+		for(Member member : members) {
+			MemberListDto memberListDto = new MemberListDto(member);
+			memberListDto.setCount(reserveRepository.countHotelService(member.getId()));
+			memberListDtos.add(memberListDto);
+			
+		}
+		
+		return memberListDtos;
+		
 	}
 	
 	//예약 업데이트

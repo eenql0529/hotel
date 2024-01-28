@@ -1,5 +1,6 @@
 package com.hotel.service;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -7,11 +8,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hotel.dto.ContactDto;
+import com.hotel.entity.Contact;
 import com.hotel.entity.Member;
+import com.hotel.repository.ContactRepository;
 import com.hotel.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
-
 
 @Service
 @Transactional //쿼리문 수행시 에러가 발생하면 변경된 데이터를 이전상태로 콜백시켜줌 
@@ -19,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberService implements UserDetailsService {
 	
 	private final MemberRepository memberRepository;
-	
+	private final ContactRepository contactRepository;
 	
 	//회원가입 데이터를 DB에 저장한다
 	public Member saveMember(Member member) {
@@ -56,5 +59,20 @@ public class MemberService implements UserDetailsService {
 				   .roles(member.getRole().toString())
 				   .build();
 
+	}
+	
+	
+	//문의하기
+	@Transactional
+	public Long contact(ContactDto contactDto) {
+		
+		Contact contacts = null;
+		try {
+			contacts = new Contact().createContact(contactDto);
+			contactRepository.save(contacts);
+		} catch (Exception e) {
+			throw e;
+		}
+		return contacts.getId();
 	}
 }

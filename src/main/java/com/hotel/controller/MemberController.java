@@ -1,12 +1,19 @@
 package com.hotel.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.hotel.dto.ContactDto;
 import com.hotel.dto.MemberFormDto;
 import com.hotel.entity.Member;
 import com.hotel.service.MemberService;
@@ -20,12 +27,34 @@ public class MemberController {
 	private final MemberService memberService;
 	private final PasswordEncoder passwordEncoder;
 	
-	//문의
-	@GetMapping(value="/members/contact")
-	public String contact() {
+	//문의페이지
+	@GetMapping(value="/contact")
+	public String contact(Model model) {
+		
+		model.addAttribute("contactDto", new ContactDto());
+		
 		return "member/contact";
 	}
 	
+	//문의하기
+	@PostMapping(value="/contact/new")
+	public String submitContact(@Valid ContactDto contactDto, BindingResult bindingResult, Model model) {
+
+		if (bindingResult.hasErrors()) {
+			return "member/contact";
+
+		}
+		
+		try {
+			memberService.contact(contactDto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMessage", "잠시 후 다시 시도해주세요");
+			return "member/contact";
+		}
+		return "member/contact"; //성공시
+		
+	}
 	//로그인
 	@GetMapping(value="/members/login")
 	public String login() {

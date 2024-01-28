@@ -33,7 +33,7 @@
 						<li><a href="#">Family Room</a></li>
 						<li><a href="#">Premium Room</a></li>
 					</ul></li>
-				<li><a href="/members/contact">Contact</a></li>
+				<li><a href="/contact">Contact</a></li>
 			</ul>
 		</nav>
 		<div id="mobile-menu-wrap"></div>
@@ -76,17 +76,11 @@
 								sec:authorize="isAuthenticated()">LOGOUT</a>
 
 							<div class="language-option" style="margin-left: 0px !important;">
-
+<a href="/admin">
 								<span class="bk-btn"
 									sec:authorize="hasAnyAuthority('ROLE_ADMIN')"
 									style="color: #ffffff; font-size: 13px; font-weight: 700;">관리자메뉴<i
-									class="fa fa-angle-down"></i></span>
-								<div class="flag-dropdown">
-									<ul>
-										<li><a href="/admin/room">객실관리</a></li>
-										<li><a href="/admin/reservationList">예약관리</a></li>
-									</ul>
-								</div>
+									class="fa fa-angle-down"></i></span></a>
 							</div>
 						</div>
 					</div>
@@ -112,7 +106,7 @@
 								
 									
 
-									<li><a href="/members/contact">Contact</a></li>
+									<li><a href="/contact">Contact</a></li>
 								</ul>
 							</nav>
 							<div class="nav-right search-switch">

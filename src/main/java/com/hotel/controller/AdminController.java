@@ -29,14 +29,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hotel.constant.ReservationStatus;
+import com.hotel.dto.ContactDto;
+import com.hotel.dto.MemberListDto;
 import com.hotel.dto.ReservationHistDto;
 import com.hotel.dto.ReserveDto;
 import com.hotel.dto.RoomFormDto;
 import com.hotel.dto.RoomImgDto;
 import com.hotel.dto.RoomTypeListDto;
 import com.hotel.dto.RoomtypeSearchDto;
+import com.hotel.entity.Contact;
 import com.hotel.entity.Reservation;
 import com.hotel.entity.RoomType;
 import com.hotel.repository.InventoryRepository;
@@ -61,19 +65,16 @@ public class AdminController {
 	private final InventoryRepository inventoryRepository;
 
 	
-	@GetMapping("/test")
-	public String test() {
-		
-		return "/admin/test";
-		
-	}
+
 	@GetMapping("/admin")
 	public String admin2(
 	        @RequestParam(name = "selectedDate", required = false) String selectedDate,
 	        Model model) {
 	    // 선택된 날짜를 기반으로 필요한 업데이트 수행
 	    adminService.updateInventory();
-	    
+		List<Contact> contact = adminService.getContactList();
+
+		model.addAttribute("contacts",contact);
 
 	    // selectedDate가 비어 있다면 오늘 날짜로 설정
 	    if (selectedDate == null || selectedDate.isEmpty()) {
@@ -91,7 +92,6 @@ public class AdminController {
 	public Map<String, Object> admin(
 			@RequestParam(name = "selectedDate", required = false) String selectedDate,
 			Model model) {
-		System.out.println(selectedDate);
 	    // selectedDate가 비어 있다면 오늘 날짜로 설정ss
 	    if (selectedDate == null || selectedDate.isEmpty()) {
 	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");
@@ -177,7 +177,7 @@ public class AdminController {
 			return "admin/roomtypeForm";
 		}
 
-		return "redirect:/";
+		return "redirect:/admin/roomtypeList";
 	}
 
 	// 객실 수정페이지 보기
@@ -196,7 +196,7 @@ public class AdminController {
 			// 에러발생시 비어있는 객체를 넘겨준다.
 			model.addAttribute("roomFormDto", new RoomFormDto());
 
-			return "admin/roomtypeForm";
+			return "redirect:/admin/roomtypeList";
 		}
 
 		return "admin/roomModifyForm";
@@ -205,16 +205,16 @@ public class AdminController {
 //	// 객실 수정(update)
 	@PostMapping(value = "/admin/room/{typeId}")
 	public String roomUpadate(@Valid RoomFormDto roomFormDto, Model model, BindingResult bindingResult,
-			@RequestParam("roomImgFile") List<MultipartFile> roomImgFileList) {
+			@RequestParam("roomImgFile") List<MultipartFile> roomImgFileList, RedirectAttributes redirectAttributes) {
 
 		if (bindingResult.hasErrors()) {
-			return "admin/roomtypeForm";
+			return "redirect:/";
 		}
 
 		// 첫번째 이미지가 있는지 검사
 		if (roomImgFileList.get(0).isEmpty() && roomFormDto.getId() == null) {
 			model.addAttribute("errorMessage", "첫번째 객실 이미지는 필수입니다.");
-			return "admin/roomtypeForm";
+			return "redirect:/";
 
 		}
 
@@ -223,20 +223,32 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMessage", "객실 수정 중 에러가 발생했습니다.");
-			return "admin/roomtypeForm";
+			return "admin/roomModifyForm";
 		}
 
-		return "redirect:/";
+	    // 수정이 완료되면 "/admin/roomtypeList" 페이지로 리다이렉트하고 메시지 전달
+	    redirectAttributes.addFlashAttribute("successMessage", "객실이 성공적으로 수정되었습니다.");
+	    return "redirect:/admin/roomtypeList";
 	}
 
 	// 객실타입삭제
 	@DeleteMapping("/room/delete/{typeId}")
-	public @ResponseBody ResponseEntity deleteRoomType(@PathVariable("typeId") Long typeId, Principal principal) {
+	public @ResponseBody ResponseEntity deleteRoomType(@PathVariable("typeId") Long typeId) {
 
 		adminService.deleteRoomType(typeId);
 
 		return new ResponseEntity<Long>(typeId, HttpStatus.OK);
 
+	}
+	
+	//문의삭제
+	@DeleteMapping("/contact/delete/{contactId}")
+	public @ResponseBody ResponseEntity deleteContact(@PathVariable("contactId") Long contactId) {
+		
+		adminService.deleteContact(contactId);
+		
+		return new ResponseEntity<Long>(contactId, HttpStatus.OK);
+		
 	}
 
 	// 고객 예약목록조회
@@ -246,12 +258,37 @@ public class AdminController {
 
 		List<ReservationHistDto> reservationHistDtoList = adminService.getReservationList();
 
+		
 		model.addAttribute("reservations", reservationHistDtoList);
 	
 		return "admin/reservationList";
 
 	}
+	
+	//고객리스트
+	@GetMapping(value = "/admin/guestList")
+	public String guestList(Model model) {
+		
+		List<MemberListDto> memberListDto = adminService.getMemberList();
+	
+		model.addAttribute("memberList",memberListDto);
+		
+		return "admin/guestList";
+	}
 
+	
+	//문의리스트
+	@GetMapping("/admin/contactList")
+	public String contactList(Model model) {
+		
+		List<Contact> contact = adminService.getContactList();
+
+		model.addAttribute("contacts",contact);
+		
+		return "admin/contactList";
+
+		
+	}
 	// 예약 상태 업데이트
 
 	@PostMapping("/admin/{reservationId}/updateStatus")

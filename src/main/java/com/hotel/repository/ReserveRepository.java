@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.hotel.dto.AdminDto;
 import com.hotel.dto.ReserveDto;
 import com.hotel.entity.QReservation;
 import com.hotel.entity.QRoomImg;
@@ -65,4 +64,9 @@ public interface ReserveRepository extends JpaRepository<Reservation, Long>{
     
     @Query(value ="select rt.type_name, IFNULL((COUNT(rs.reservation_id)), 0), ROUND(IFNULL((COUNT(rs.reservation_id) / 3 * 100), 0)) as occupancy_rate from room_type rt LEFT JOIN reservation rs on rt.type_id = rs.type_id AND date(rs.check_in) <= STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일') AND date(rs.check_out) > STR_TO_DATE(:selectedDate, '%Y년 %m월 %d일') GROUP BY rt.type_name", nativeQuery = true)
     List<Object[]> calculateRate(@Param("selectedDate") String selectedDate);
+    
+	//호텔이용횟수
+	@Query(value = "select count(*) from reservation where member_id = :memberId", nativeQuery = true)
+	int countHotelService(@Param("memberId") Long memberId);
+	
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -117,7 +118,7 @@ public class ReservationController {
 	
 	
 	//예약취소
-	@PostMapping("/reservation/{reservationId}/cancel")
+	@DeleteMapping("/reservation/cancel/{reservationId}")
 	public @ResponseBody ResponseEntity cancelReserve(@PathVariable("reservationId") Long reservationId
 				, Principal principal) {
 		//1. 본인확인
@@ -126,9 +127,7 @@ public class ReservationController {
 				
 		}
 		
-		//2.주문취소
-		System.out.println(reservationId);
-		reservationService.cancelReserve(reservationId);
+		reservationService.deleteReserve(reservationId);
 		
 		return new ResponseEntity<Long>(reservationId, HttpStatus.OK); //성공했을때
 	}

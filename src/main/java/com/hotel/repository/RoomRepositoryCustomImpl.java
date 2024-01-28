@@ -47,6 +47,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
 								roomType.roomSize,
 								roomImg.imgUrl,
 								roomType.comment,
+								roomType.capacity,
 								roomType.price,
 								roomType.availability
 								)

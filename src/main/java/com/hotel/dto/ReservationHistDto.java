@@ -34,26 +34,31 @@ public class ReservationHistDto {
 		
 		//스위치문 써서 enum 한글로쓰기
 		switch (reservation.getRsStatus()) {
-		case WAITING: {
-			
-			this.status = "대기";
-			break;
-		}
-		case CONFIRMED: {
-			
-			this.status = "확정";
-			break;
-		}
-		case CANCELED: {
+		case CANCEL: {
 			
 			this.status = "취소";
 			break;
 		}
-		case DELETED: {
+		case CHECK_IN: {
 			
-			this.status = "삭제";
+			this.status = "체크인";
 			break;
-		}}
+		}
+		case CHECK_OUT: {
+			
+			this.status = "체크아웃";
+			break;
+		}
+		case RESERVATION: {
+			
+			this.status = "예약";
+			break;
+		}
+	case NO_SHOW: {
+		
+		this.status = "노쇼";
+		break;
+	}}
 
 	}
 

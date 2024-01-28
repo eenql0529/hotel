@@ -29,161 +29,7 @@ padding-top: 30px;
     margin: 4px 0 4px 12px;
     padding: 0;
     }
-    #root {
-  width: 100%;
-  margin: 0 auto;
-  margin-top: 50px;
-  max-width: 800px;
-}
 
-.title {
-  left: 82px;
-    position: absolute;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.contents {
-  display: flex;
-  flex-direction: row;
-  margin-top: 30px;
-}
-.contents .upload-box {
-  width: calc(50% - 15px);
-  box-sizing: border-box;
-  margin-right: 30px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.contents .upload-box .drag-file {
-  width: 100%;
-  height: 360px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border: 3px dashed #dbdbdb;
-}
-.contents .upload-box .drag-file.highlight {
-  border: 3px dashed red;
-}
-.contents .upload-box .drag-file .image {
-  width: 40px;
-}
-.contents .upload-box .drag-file .message {
-  margin-bottom: 0;
-}
-.contents .upload-box .file-label {
-  margin-top: 30px;
-  background-color: #5b975b;
-  color: #fff;
-  text-align: center;
-  padding: 10px 0;
-  width: 50%;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.contents .upload-box .file {
-  display: none;
-}
-
-.contents .files {
-  width: calc(50% - 15px);
-  box-sizing: border-box;
-  overflow: auto;
-  height: 360px;
-}
-.contents .files .file {
-  display: flex;
-  padding: 20px 20px;
-  border-bottom: 1px solid #dbdbdb;
-}
-.contents .files .file:last-child {
-  margin-bottom: 0px;
-  border-bottom: none;
-}
-
-.contents .files .file .thumbnail {
-  display: flex;
-  flex: none;
-  width: 50px;
-  margin-right: 20px;
-  align-items: center;
-}
-.contents .files .file .thumbnail .image {
-  width: 100%;
-}
-
-.contents .files .file .details {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.contents .files .file .details .header {
-  display: flex;
-}
-.contents .files .file .details .header .name {
-  width: 100px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.contents .files .file .details .header .size {
-  margin-left: auto;
-}
-
-.contents .files .file .progress {
-  position: relative;
-  height: 6px;
-  background-color: #dbdbdb;
-  overflow: hidden;
-  margin-top: 4px;
-  border-radius: 10px;
-}
-.contents .files .file .progress .bar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  background-color: #5b975b;
-}
-
-.contents .files .file .status {
-  display: flex;
-  width: 100%;
-}
-.contents .files .file .status .percent {
-}
-.contents .files .file .status .speed {
-  margin-left: auto;
-}
-
-@media(max-width: 700px) {
-  .contents {
-    display: flex;
-    flex-direction: column;
-    margin-top: 30px;
-  }
-  .contents .upload-box {
-    width: 100%;
-    box-sizing: border-box;
-    margin-right: 0;
-  }
-  .contents .upload-box .drag-file {
-    height: 150px;
-  }
-  .contents .files {
-    width: 100%;
-    box-sizing: border-box;
-    margin-right: 0;
-    overflow: initial;
-  }
-}
 .fieldError{
 font-size: 13px;
     font-weight: bold;
@@ -312,35 +158,9 @@ font-size: 13px;
 
 							</div>
 						</div>
-<div id="root">
-  <h2 class="title">File Upload</h2>
-  <hr>
-  <div class="contents"th:each="roomImgDto, status: ${roomFormDto.roomImgDtoList}">
-    <div class="upload-box">
-      <div id="drop-file" class="drag-file">
-        <img src="https://img.icons8.com/pastel-glyph/2x/image-file.png" alt="파일 아이콘" class="image">
-        <p class="message">Drag files to upload</p>
-      </div>
-      <label class="file-label" for="roomImgFile">Choose File</label>
-      <input class="file" id="roomImgFile" type="file" name="roomImgFile" multiple onchange="dropFile.handleFiles(this.files)">
-    </div>
-    <div id="files" class="files"th:text="${not #strings.isEmpty(roomImgDto.oriImgName)} 
-  										? ${roomImgDto.oriImgName} : '객실이미지' + ${status.index+1}">
-      <div class="file">
-        <div class="thumbnail">
-        </div>
-        <div class="details">
-          <header class="header">
-          </header>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 
-<!-- 							<div class="form-group row" th:if="${not #lists.isEmpty(roomFormDto.roomImgDtoList)}" th:each="roomImgDto, status: ${roomFormDto.roomImgDtoList}">
+							<div class="form-group row" th:if="${not #lists.isEmpty(roomFormDto.roomImgDtoList)}" th:each="roomImgDto, status: ${roomFormDto.roomImgDtoList}">
 								<div class="col-md-12">
 								 	<label for="formFile" class="form-label" 
   									th:text="${not #strings.isEmpty(roomImgDto.oriImgName)} 
@@ -349,7 +169,7 @@ font-size: 13px;
   									<input class="form-control" type="file" id="roomImgFile" name="roomImgFile">
 								</div>
 							</div>
- -->							
+							
 							
 							
 <!-- 						<div class="form-group row form-padding-top"
@@ -396,83 +216,6 @@ font-size: 13px;
       } );
     
 
-    function DropFile(dropAreaId, fileListId) {
-  	  let dropArea = document.getElementById(dropAreaId);
-  	  let fileList = document.getElementById(fileListId);
-
-  	  function preventDefaults(e) {
-  	    e.preventDefault();
-  	    e.stopPropagation();
-  	  }
-
-  	  function highlight(e) {
-  	    preventDefaults(e);
-  	    dropArea.classList.add("highlight");
-  	  }
-
-  	  function unhighlight(e) {
-  	    preventDefaults(e);
-  	    dropArea.classList.remove("highlight");
-  	  }
-
-  	  function handleDrop(e) {
-  	    unhighlight(e);
-  	    let dt = e.dataTransfer;
-  	    let files = dt.files;
-
-  	    handleFiles(files);
-
-  	    const fileList = document.getElementById(fileListId);
-  	    if (fileList) {
-  	      fileList.scrollTo({ top: fileList.scrollHeight });
-  	    }
-  	  }
-
-  	  function handleFiles(files) {
-  	    files = [...files];
-  	    files.forEach(previewFile);
-  	  }
-
-  	  function previewFile(file) {
-  	    console.log(file);
-  	    fileList.appendChild(renderFile(file));
-  	  }
-
-  	  function renderFile(file) {
-  	    let fileDOM = document.createElement("div");
-  	    fileDOM.className = "file";
-  	    fileDOM.innerHTML = `
-  	      <div class="thumbnail">
-  	        <img src="https://img.icons8.com/pastel-glyph/2x/image-file.png" alt="파일타입 이미지" class="image">
-  	      </div>
-  	      <div class="details">
-  	        <header class="header">
-  	          <span class="name">${file.name}</span>
-  	          <span class="size">${file.size}</span>
-  	        </header>
-  	        <div class="progress">
-  	          <div class="bar"></div>
-  	        </div>
-  	        <div class="status">
-  	          <span class="percent">100% done</span>
-  	          <span class="speed">90KB/sec</span>
-  	        </div>
-  	      </div>
-  	    `;
-  	    return fileDOM;
-  	  }
-
-  	  dropArea.addEventListener("dragenter", highlight, false);
-  	  dropArea.addEventListener("dragover", highlight, false);
-  	  dropArea.addEventListener("dragleave", unhighlight, false);
-  	  dropArea.addEventListener("drop", handleDrop, false);
-
-  	  return {
-  	    handleFiles
-  	  };
-  	}
-
-  	const dropFile = new DropFile("drop-file", "files");
 
   </script>
 

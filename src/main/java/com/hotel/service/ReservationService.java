@@ -56,14 +56,6 @@ public class ReservationService {
 		//2.현재 로그인한 회원의 이메일을 이용해 회원정보를 조회
 		Member member = memberRepository.findByEmail(email);
 		
-		
-		//3.주문할 상품 엔티티와 주문 수량을 이용하여 주문 상품 엔티티를 생성
-		
-		// DateTimeFormatter로 원하는 형식의 패턴을 정의합니다.
-
-		// endDate를 newFormatter 형식의 문자열로 변환합니다.
-
-		// reserveDto에 설정합니다.
 
 		LocalDate startDate = LocalDate.parse(reserveDto.getCheckIn());
         LocalDate endDate = LocalDate.parse(reserveDto.getCheckOut());
@@ -172,15 +164,6 @@ public class ReservationService {
 		return true;	
 	}
 	
-	//예약취소
-	public void cancelReserve(Long reservationId) {
-		Reservation reservation = reserveRepository.findById(reservationId)
-													.orElseThrow(EntityNotFoundException::new);
-		
-		//OrderStatus를 update -> entity 의 필드 값을 바꿔주면 된다.
-		reservation.cancelReserve();
-		
-	}
 	
 	
 	
@@ -192,9 +175,37 @@ public class ReservationService {
 		//->영속성 컨텍스트에 엔티티를 저장한 후 변경 감지를 하도록 하기 위해
 		Reservation reservation = reserveRepository.findById(reservationId)
 				.orElseThrow(EntityNotFoundException::new);
-		
+	    RoomType roomType = reservation.getTypeId();
 		//delete
 		reserveRepository.delete(reservation);
+		
+		 // 3. 예약 기간 동안의 날짜 목록 생성
+	    LocalDate startDate = LocalDate.parse(reservation.getCheckIn());
+	    LocalDate endDate = LocalDate.parse(reservation.getCheckOut());
+	    List<String> dateList = new ArrayList<>();
+	    while (!startDate.isAfter(endDate)) {
+	        dateList.add(startDate.toString());
+	        startDate = startDate.plusDays(1);
+	    }
+
+	    // 4. 예약 취소에 따른 재고 복원
+	    try {
+	        for (String date : dateList) {
+	            Inventory inventory = inventoryRepository.findByDateAndRoomType(date, roomType);
+	            if (inventory != null) {
+	                inventory.setStock(inventory.getStock() + 1); // 재고 증가
+	                inventoryRepository.save(inventory);
+	            }
+	            // 만약 해당 날짜의 Inventory가 없다면 새로 생성하지 않음
+	        }
+
+	        // 5. 예약 삭제
+	        reserveRepository.delete(reservation);
+	    } catch (Exception e) {
+	        // 복원 중 오류 발생 시 롤백 처리 등 예외 처리 필요
+	        throw e;
+	    }
+		
 	}
 	
 	

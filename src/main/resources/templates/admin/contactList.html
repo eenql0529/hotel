@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/adminLayout}">
+<head>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<!-- 각 페이지의 CSS가 작성될 위치 -->
+<th:block layout:fragment="css">
+	<style>
+	.table-tr{
+	background-color: #f7f7f7;
+	}
+	.table-tr > th{
+	font-size: 12px;
+	}
+	.roomlist-img{
+	width: 160px;
+	height: 160px;
+	}
+	td > p {
+	font-size: 14px !important;
+	}
+
+	.status-pending{
+    margin: 4px 0;
+    text-align: center;
+    color: #8f8f8f;
+    font-weight: 500;
+}
+
+.status-completed{
+    margin: 4px 0;
+    text-align: center;
+    color: #F44336;
+        font-weight: 500;
+}
+	</style>
+
+</th:block>
+
+</head>
+<main layout:fragment="content">
+<div class="col-12">
+          <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3" style="
+    display: flex;
+    justify-content: space-between;
+">
+                <h6 class="text-white text-capitalize ps-3">고객 문의 관리</h6>
+              </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+
+            
+            <div style="
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+">
+                  <form class="d-flex">
+        <input id="searchQuery" class="form-control me-sm-2" type="search" placeholder="Search">
+        <button id="searchBtn" class="my-2 my-sm-0" type="submit">Search</button>
+      </form>
+            </div>
+              <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr class="table-tr"> 
+                      <th class="text-uppercase text-secondary font-weight-bolder opacity-7">번호</th>
+                      <th class="text-uppercase text-secondary font-weight-bolder opacity-7 ps-2">제목</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder opacity-7">보낸사람</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder opacity-7">email</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder opacity-7">작성일자</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder opacity-7">상태</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder opacity-7"></th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody   th:each="contact, status: ${contacts}">
+                    <tr >
+                    
+                      <td  style="padding:12px 24px;">
+<p th:text="${contact.id}"class=" text-secondary mb-0"></p>
+                      </td>
+                      <td>
+                        <p  style="cursor:pointer;"data-bs-toggle="collapse" th:href="'#collapseContact' + ${contact.id}" aria-expanded="false" th:aria-controls="'collapseContact' + ${contact.id}" th:text="${contact.title}"class="font-weight-bold mb-0"  th:onclick="toggleAccordion([[${contact.id}]])"></p>
+                      </td>
+                      <td class="align-middle text-center">
+                        <p th:text="${contact.name}"class="text-secondary mb-0"></p>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                                                <p th:text="${contact.email}"class=" mb-0"></p>
+                      </td>
+                      <td class="align-middle text-center">
+<p th:text="${contact.regTime}"class=" text-secondary mb-0"></p>
+                      </td>
+                      <td class="align-middle text-center">
+                      <p class="contact-table-p status-pending  font-weight-bold" th:if="${contact.contactStatus.toString()} == 'pending' "
+>답변대기</p>
+                      <p class="contact-table-p status-completed  font-weight-bold" th:if="${contact.contactStatus.toString()} == 'completed' "
+>답변완료</p>
+
+                      </td>
+                      <td class="align-middle text-center">
+<a th:value="${contact.id}" style="cursor:pointer;"
+								th:onclick="deleteRoomType([[${contact.id}]])" class="text-secondary text-xs font-weight-bold"><svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Bold-Outline" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="delete" fill-rule="nonzero" fill="#a5a6a6">
+            <path d="M8,4.5 L8,2.5 C8,1.94771525 8.44771525,1.5 9,1.5 L15,1.5 C15.5522847,1.5 16,1.94771525 16,2.5 L16,4.5 L20,4.5 C20.5522847,4.5 21,4.94771525 21,5.5 C21,6.05228475 20.5522847,6.5 20,6.5 L20,18.5 C20,20.709139 18.209139,22.5 16,22.5 L8,22.5 C5.790861,22.5 4,20.709139 4,18.5 L4,6.5 C3.44771525,6.5 3,6.05228475 3,5.5 C3,4.94771525 3.44771525,4.5 4,4.5 L8,4.5 Z M6,6.5 L6,18.5 C6,19.6045695 6.8954305,20.5 8,20.5 L16,20.5 C17.1045695,20.5 18,19.6045695 18,18.5 L18,6.5 L6,6.5 Z M9,9.5 C9,8.94771525 9.44771525,8.5 10,8.5 C10.5522847,8.5 11,8.94771525 11,9.5 L11,17.5 C11,18.0522847 10.5522847,18.5 10,18.5 C9.44771525,18.5 9,18.0522847 9,17.5 L9,9.5 Z M13,9.5 C13,8.94771525 13.4477153,8.5 14,8.5 C14.5522847,8.5 15,8.94771525 15,9.5 L15,17.5 C15,18.0522847 14.5522847,18.5 14,18.5 C13.4477153,18.5 13,18.0522847 13,17.5 L13,9.5 Z M10,4.5 L14,4.5 L14,3.5 L10,3.5 L10,4.5 Z" id="shape"></path>
+        </g>
+    </g>
+</svg></a>
+                      </td>
+
+
+
+
+                    </tr>
+                    <tr th:id="'collapseContact' + ${contact.id}" class="collapse">
+                    <td></td>
+                     <td style="
+    padding: 30px;
+">
+                    <!-- 여기에 상세 내용을 표시 -->
+                    <p><span th:text="${contact.content}"></span></p>
+
+                    <a th:value="${contact.id}" style="cursor:pointer;" th:onclick="deleteRoomType([[${contact.id}]])" class="text-secondary text-xs font-weight-bold">
+                        <!-- 삭제 버튼 아이콘 -->
+                    </a>
+                <!-- 아코디언 내용 끝 --></td>
+                    </tr>
+                               </tbody>
+                </table>
+                
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+
+</main>
+	<th:block layout:fragment="script">
+	<script>
+	function deleteRoomType(contactId) {
+		const deleteConf = confirm("삭제하시겠습니까?");
+		if (!deleteConf)
+			return; //취소버튼 누르면
+
+		//request URL
+		var url = "/contact/delete/" + contactId;
+
+		var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+
+		$.ajax({
+			url : url, //request URL
+			type : "DELETE", //전송방식
+			contentType : "application/json",
+			beforeSend : function(xhr) {
+				//데이터를 전송하기 전에 헤더에 csrf 값을 설정
+				xhr.setRequestHeader(header, token);
+			},
+			dataType : "json",
+			cache : false,
+			success : function(result, status) {
+				location.href = '/admin/contactList';
+			}
+
+		});
+	}
+    // 상세 내용을 펼치거나 감추기 위한 함수
+    function toggleAccordion(contactId) {
+        // 상세 내용을 담고 있는 요소의 ID
+        var accordionId = "collapse_" + contactId;
+        console.log(contactId);
+        console.log(document.getElementById(accordionId));
+
+        // 해당하는 상세 내용의 요소를 가져옴
+        var accordionContent = document.getElementById(accordionId);
+
+        // 상세 내용이 숨겨져 있을 경우 펼치고, 펼쳐져 있을 경우 감춤
+        if (accordionContent.style.display === "none" || accordionContent.style.display === "") {
+            accordionContent.style.display = "block";
+        } else {
+            accordionContent.style.display = "none";
+        }
+    }
+	</script>
+	</th:block>
+</html>
