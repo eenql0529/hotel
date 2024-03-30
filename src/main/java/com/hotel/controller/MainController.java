@@ -21,7 +21,7 @@ public class MainController {
 	public String main(Model model) {
 		
 List<RoomTypeListDto> roomTypeList = roomService.getRoomTypeList();
-		
+
 		model.addAttribute("roomTypeList", roomTypeList);
 		return "main";
 	}

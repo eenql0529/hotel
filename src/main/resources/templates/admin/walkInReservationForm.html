@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/adminLayout}">
+<head>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<!-- 각 페이지의 CSS가 작성될 위치 -->
+<th:block layout:fragment="css">
+	<style>
+ 	.padding-left-120{
+	padding-left:120px;
+	}
+	.padding-left-50{
+	padding-left:50px;
+	}
+	    #editor {
+        height: 300px;
+        width: 100%;
+    }
+    .form-border{
+    border-bottom: 1px solid #cecece;
+    border-radius: 0;
+    }
+    .form-padding-top{
+padding-top: 30px;
+padding-left: 120px;
+    padding-right: 120px;
+    }
+    .form-max-width{
+    margin: 4px 0 4px 12px;
+    padding: 0;
+    width: 220px;
+    display: flex;
+    align-items: center;
+    }
+.flex-column{
+
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+.fieldError{
+font-size: 13px;
+    font-weight: bold;
+    color: #e91e63;
+}
+
+/* SECTION - BIRTH */
+.info#info__birth {
+  display: flex;
+}
+
+.info#info__birth select {
+  margin-left : 7px;
+}
+
+.info#info__birth select:first-child {
+  margin-left : 0px;
+}
+
+/* Nice Select의 드롭다운 영역에 스크롤바 추가 */
+.nice-select .list {
+    max-height: 200px; /* 스크롤바가 표시될 최대 높이 설정 */
+    overflow-y: auto; /* 수직 스크롤바 표시 */
+}
+
+/* 스크롤바 스타일 지정 */
+.nice-select .list::-webkit-scrollbar {
+    width: 10px; /* 스크롤바 너비 */
+}
+
+.nice-select .list::-webkit-scrollbar-thumb {
+    background-color: #888; /* 스크롤바 색상 */
+    border-radius: 5px; /* 스크롤바 모서리 반경 */
+}
+
+.nice-select .list::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* 스크롤바 트랙 색상 */
+}
+.nice-select > span{
+font-size:15px;
+}
+.border-bottom {
+    border-bottom: 1px solid #cfcfcf;
+}
+
+.border-bottom > p {
+    margin-left: 25px;
+    font-size: 16px;
+    font-weight: 300;
+}
+.icon-calendar {
+position: relative;
+    bottom: 26px;
+    fill: #dfa974;
+    left: 185px;
+    
+}
+.date-input{
+width: 100%;
+    border: 1px solid #ebebeb;
+    border-radius: 2px;
+    text-transform: uppercase;
+    padding-left: 20px;
+    font-size:15px;
+}
+*{
+font-family:suit;
+}
+.form-label{
+
+}
+</style>
+
+</th:block>
+
+</head>
+<main layout:fragment="content">
+	<div class="col-12">
+		<div class="card my-4">
+			<div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+				<div
+					class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3"
+					style="display: flex; justify-content: space-between;">
+
+					<h6 class="text-white text-capitalize ps-3">현장예약</h6>
+				</div>
+			</div>
+			<div class=" card-body px-0 pb-2"style="
+    padding-top: 65px;
+"><div class="border-bottom">
+
+<p>객실정보</p>
+</div>
+				<div class="container"style="display: flex; flex-direction: row;">
+
+
+
+					<form class=""role="form" action="/walkInReservation" method="post"
+					>
+
+<div class="row justify-content-md-center ">
+
+						
+						<div class="row g-3 form-padding-top">
+												<div class="col-md flex-column padding-left-120">
+
+							<label class="text-black form-label">객실타입</label> 
+							<select
+								class="form-control form-select-sm form-max-width"
+								aria-label=".form-select-sm example"  id="typeId">
+								<th:block  th:each="room :${roomTypeList}">
+								<option th:value="${room.id}">[[${room.typeName}]]</option>
+								</th:block>
+
+							</select>
+
+						</div>
+												<div class="col-md flex-column padding-left-120">
+
+							<label class="text-black form-label">투숙객 인원</label> 
+							<select
+								class="form-control form-select-sm form-max-width"
+								aria-label=".form-select-sm example" id="guest">
+								<option value="1">1명</option>
+								<option value="2">2명</option>
+								<option value="3">3명</option>
+								<option value="4">4명</option>
+
+							</select>
+
+						</div>
+
+						</div>
+						<div class="row g-3 form-padding-top">
+						
+			<div class="check-date col-md padding-left-120 flex-column">
+					<label for="date-in form-label">Check In:</label> <input type="text" style="max-width: 200px;margin-left: 12px;min-width:200px;"
+
+						class="date-input" id="date-in" autocomplete="off"> <svg class="icon-calendar" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+        <!-- 내용 복사 붙여넣기 -->
+        <path d="M15,6 L9,6 L9,7 C9,7.55228475 8.55228475,8 8,8 C7.44771525,8 7,7.55228475 7,7 L7,6 L6,6 C4.8954305,6 4,6.8954305 4,8 L4,9 L20,9 L20,8 C20,6.8954305 19.1045695,6 18,6 L17,6 L17,7 C17,7.55228475 16.5522847,8 16,8 C15.4477153,8 15,7.55228475 15,7 L15,6 L15,6 Z M17,4 L18,4 C20.209139,4 22,5.790861 22,8 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,8 C2,5.790861 3.790861,4 6,4 L7,4 L7,3 C7,2.44771525 7.44771525,2 8,2 C8.55228475,2 9,2.44771525 9,3 L9,4 L15,4 L15,3 C15,2.44771525 15.4477153,2 16,2 C16.5522847,2 17,2.44771525 17,3 L17,4 L17,4 Z M20,11 L4,11 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,11 L20,11 Z" id="shape"></path>
+    </svg>
+				</div>
+				<div class="check-date col-md padding-left-120 flex-column">
+					<label for="date-out form-label">Check Out:</label> <input type="text" style="max-width: 200px;margin-left: 12px;min-width:200px;"
+						class="date-input" id="date-out" autocomplete="off">     <svg class="icon-calendar" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+        <!-- 내용 복사 붙여넣기 -->
+        <path d="M15,6 L9,6 L9,7 C9,7.55228475 8.55228475,8 8,8 C7.44771525,8 7,7.55228475 7,7 L7,6 L6,6 C4.8954305,6 4,6.8954305 4,8 L4,9 L20,9 L20,8 C20,6.8954305 19.1045695,6 18,6 L17,6 L17,7 C17,7.55228475 16.5522847,8 16,8 C15.4477153,8 15,7.55228475 15,7 L15,6 L15,6 Z M17,4 L18,4 C20.209139,4 22,5.790861 22,8 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,8 C2,5.790861 3.790861,4 6,4 L7,4 L7,3 C7,2.44771525 7.44771525,2 8,2 C8.55228475,2 9,2.44771525 9,3 L9,4 L15,4 L15,3 C15,2.44771525 15.4477153,2 16,2 C16.5522847,2 17,2.44771525 17,3 L17,4 L17,4 Z M20,11 L4,11 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,11 L20,11 Z" id="shape"></path>
+    </svg>
+				</div>
+						</div>
+<div class="border-bottom" style="padding:0px;margin-top: 40px;">
+
+<p>고객정보</p>
+</div>
+						<div class="row g-3 form-padding-top">
+							<div class="col-md flex-column padding-left-120">
+								<label class="text-black form-label">이름</label> <input id="name"
+									 type="text" class="form-control form-border form-max-width"
+									placeholder="이름 입력">
+								
+							</div>
+<div class="info col-md flex-column padding-left-120" id="info__birth">
+							<label class="text-black form-label">생년월일</label>
+							<div style="display: flex;flex-direction: row; margin-left: 12px;">
+  <select class="box " id="birth-year" >
+    <option disabled selected>출생 연도</option>
+  </select>
+  <select class="box "  id="birth-month">
+    <option disabled selected>월</option>
+  </select>
+  <select class="box " id="birth-day">
+    <option disabled selected>일</option>
+  </select>
+  </div>
+</div>
+							
+							</div>
+							
+							
+						<div class="row g-3 form-padding-top">
+							<div class="col-md flex-column padding-left-120">
+								<label class="text-black form-label">휴대폰번호</label> <input id="phone"
+									 type="text" class="form-control form-border form-max-width"
+									placeholder="휴대폰번호 입력" oninput="oninputPhone(this)"><small style="
+    color: #ff006f;
+    margin-left: 12px;
+    font-weight: 500;
+">(-)를 제외한 숫자만 입력해주세요</small>
+								
+							</div>
+														<div class="col-md flex-column padding-left-120">
+								<label class="text-black">주소</label> <input id="address"
+									 type="text" class="form-control form-border form-max-width " style="width:355px !important;"
+									placeholder="주소 입력">
+								
+							</div>
+
+							
+							</div>
+
+
+
+
+
+
+						<div class="form-group" style="
+    margin-top: 130px;
+">
+							<div class="col-md-12 d-flex justify-content-center">
+								<button type="button" onclick="order()" class="btn btn-primary mb-3"
+									style="width: 180px;font-size: 15px;">예약 등록</button>
+							</div>
+						</div>
+
+</div>
+						<input type="hidden" th:name="${_csrf.parameterName}"
+							th:value="${_csrf.token}">
+					</form>
+
+
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+</main>
+<th:block layout:fragment="script">
+
+	<script src="/js/ckeditor.js"></script>
+
+
+
+    <script>
+
+    
+
+ 	document.addEventListener('DOMContentLoaded', function() {
+ 		  function getLastDayOfMonth(year, month) {
+ 	 		    return new Date(year, month, 0).getDate();
+ 	 		}
+ 	    const birthYearEl = document.querySelector('#birth-year');
+ 	    const birthMonthEl = document.querySelector('#birth-month');
+ 	    const birthDayEl = document.querySelector('#birth-day');
+ 		var dt = new Date();
+ 		var year = dt.getFullYear();
+ 		var month = dt.getMonth()+1;
+ 		var lastDay = getLastDayOfMonth(year,month);
+
+
+
+ 	    for (let i = (year); i >=(year-100); i--) {
+ 	        const yearOption = document.createElement('option');
+ 	        yearOption.setAttribute('value', i);
+ 	        yearOption.textContent = i;
+ 	        birthYearEl.appendChild(yearOption);
+ 	    }
+ 	    for (let i = 1; i <= 12; i++) {
+ 	        const monthOption = document.createElement('option');
+ 	       monthOption.setAttribute('value', i);
+ 	      monthOption.textContent = i;
+ 	        birthMonthEl.appendChild(monthOption);
+ 	    }
+ 	    for (let i = 1; i <= 31; i++) {
+ 	        const dayOption = document.createElement('option');
+ 	       dayOption.setAttribute('value', i);
+ 	      dayOption.textContent = i;
+ 	        birthDayEl.appendChild(dayOption);
+ 	    }
+ 	    
+ 	 
+ 	   console.log(getLastDayOfMonth(2024,2));
+ 	// Nice Select 요소를 갱신하여 변경 사항을 반영
+ 	   $('#birth-year').niceSelect('update');
+ 	   $('#birth-month').niceSelect('update');
+ 	   $('#birth-day').niceSelect('update');
+ 	    
+ 	}); 	
+
+
+
+  </script>
+
+<script>
+
+
+</script>
+
+ 	<script th:inline="javascript">
+
+	$(document).ready(function(){
+    	var errorMessage = [[${errorMessage}]];
+    	if(errorMessage != null){
+        	alert(errorMessage);
+    	}
+    	
+		
+	});
+	
+
+
+	 
+	 $(document).ready(function(){
+		 		// 기존 DatePicker를 제거
+	 $("#date-in, #date-out").datepicker("destroy");
+	
+		 		// 현재 날짜 가져오기
+	    var currentDate = new Date();
+		 		
+	 // 새로운 설정을 적용한 후 DatePicker를 다시 초기화
+	 $("#date-in, #date-out").datepicker({
+	     dateFormat: "yy-mm-dd", // 원하는 날짜 형식으로 변경
+	     showOtherMonths: true, //첫날과 끝날의 앞뒤월의 날짜를 표시
+	     showMonthAfterYear: true, //년도 먼저 나오고, 뒤에 월 표시
+	     changeYear: true, //콤보박스에서 년 ,월 선택가능
+	     changeMonth: true,
+	     minDate: currentDate, // 오늘 이전의 날짜 선택 불가능
+	     closeText: '닫기',
+	     dayNamesMin: ['일','월','화','수','목','금','토'], //달력의 요일 부분 텍스트
+	     monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+	        beforeShowDay: function(date) {
+	            var date1 = $.datepicker.parseDate("yy-mm-dd", $("#date-in").val());
+	            var date2 = $.datepicker.parseDate("yy-mm-dd", $("#date-out").val());
+
+	            // 선택된 체크인 날짜와 체크아웃 날짜 사이의 날짜를 강조 표시
+	            if (date1 && (date.getTime() == date1.getTime() || (date2 && date >= date1 && date <= date2))) {
+	                return [true, "checked-date"];
+	            }
+	            return [true, ""];
+	        },
+	        onSelect: function(dateText, inst) {
+	            // 날짜가 선택될 때 아무 작업도 수행하지 않음
+	        }
+	 	
+	 })
+
+	 });
+	    function oninputPhone(target) {
+	        target.value = target.value
+	            .replace(/[^0-9]/g, '')
+	            .replace(/(^02.{0}|^01.{1}|[0-9]{3,4})([0-9]{3,4})([0-9]{4})/g, "$1-$2-$3");
+	    }
+	function order() {
+		var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+
+		var url = "/walkInReservation";
+
+		//controller(서버)에 전달할 데이터
+		var paramData = {
+			typeId : $("#typeId").val(),
+			address : $("#address").val(),
+			phone : $("#phone").val(),
+			name : $("#name").val(),
+			birth : $("#birth-year").val()+"-"+("0" + $("#birth-month").val()).slice(-2) + "-" + ("0" + $("#birth-day").val()).slice(-2),
+			guest : $("#guest").val(),
+			checkIn : $("#date-in").val(),
+			checkOut : $("#date-out").val()
+		}
+
+
+		//★전달하기 전에 데이터를 반드시 JSON -> 문자열로 만들어야 한다.
+		var param = JSON.stringify(paramData);
+		
+		$.ajax({
+			url : url, //request URL
+			type : "POST", //전송방식
+			contentType : "application/json",
+			data : param, //서버에 전송할 데이터
+			beforeSend : function(xhr) {
+				//데이터를 전송하기전에 헤더에 csrf 값을 설정
+				xhr.setRequestHeader(header, token);
+			},
+			dataType : "json",
+			cache : false,
+			success : function(result, status) {
+				alert("예약이 완료 되었습니다." + result);
+				//location.href = '/';
+			},
+			error : function(jqXHR, status, error) {
+				if (jqXHR.status == '401') {
+					alert('로그인 후 이용해주세요.');
+					location.href = '/members/login';
+				} else {
+					//에러메세지 출력(ResponseEntity에서 받아온 값을 출력해준다)
+					alert(jqXHR.responseText);
+				}
+			}
+		});
+
+	}
+	
+	</script> 
+</th:block>
+</html>

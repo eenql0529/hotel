@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,8 +32,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.hotel.constant.ContactStatus;
 import com.hotel.constant.ReservationStatus;
 import com.hotel.dto.ContactDto;
+import com.hotel.dto.CustomerListDto;
+import com.hotel.dto.MailDto;
 import com.hotel.dto.MemberListDto;
 import com.hotel.dto.ReservationHistDto;
 import com.hotel.dto.ReserveDto;
@@ -40,9 +44,13 @@ import com.hotel.dto.RoomFormDto;
 import com.hotel.dto.RoomImgDto;
 import com.hotel.dto.RoomTypeListDto;
 import com.hotel.dto.RoomtypeSearchDto;
+import com.hotel.dto.SearchDto;
+import com.hotel.dto.WalkInCustomerDto;
 import com.hotel.entity.Contact;
 import com.hotel.entity.Reservation;
 import com.hotel.entity.RoomType;
+import com.hotel.entity.WalkInCustomer;
+import com.hotel.repository.ContactRepository;
 import com.hotel.repository.InventoryRepository;
 import com.hotel.repository.ReserveRepository;
 import com.hotel.repository.RoomRepository;
@@ -51,6 +59,7 @@ import com.hotel.service.ReservationService;
 import com.hotel.service.RoomImgService;
 import com.hotel.service.RoomService;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -63,6 +72,7 @@ public class AdminController {
 	private final RoomRepository roomRepository;
 	private final ReserveRepository reserveRepository;
 	private final InventoryRepository inventoryRepository;
+	private final ContactRepository contactRepository;
 
 	
 
@@ -102,6 +112,8 @@ public class AdminController {
 		// 모델에 업데이트된 데이터 추가
 		Map<String, Object> responseData = new HashMap<>();
 		responseData.put("selectedDate", selectedDate);
+		responseData.put("sumTotalPrice", reserveRepository.sumTotalPrice(selectedDate));
+		System.out.println(reserveRepository.sumTotalPrice(selectedDate));
 		responseData.put("countCheckIn", reserveRepository.countCheckInToday(selectedDate));
 		responseData.put("countCheckIn2", reserveRepository.countRsStatusCheckInToday(selectedDate));
 		responseData.put("countCheckOut", reserveRepository.countCheckOutToday(selectedDate));
@@ -241,6 +253,64 @@ public class AdminController {
 
 	}
 	
+
+
+	// 예약리스트 (검색 + 페이징)
+	@GetMapping(value = {"/admin/reservationList","/admin/reservationList/{page}"})
+	public String reservationList(Model model,SearchDto searchDto,@PathVariable("page")Optional<Integer> page) {
+
+		Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 5);
+		
+		Page<ReservationHistDto> reservationHistDtoList = adminService.getReservationList(searchDto,pageable);
+
+		model.addAttribute("reservations", reservationHistDtoList);
+		model.addAttribute("searchDto",searchDto);
+		model.addAttribute("maxPage", 5); //상품관리 페이지 하단에 보여줄 최대 페이지 번호
+
+		System.out.println(searchDto.getSearchType());
+		System.out.println(searchDto.getKeyword());
+		return "admin/reservationList";
+
+	}
+	
+	//예약삭제
+	@DeleteMapping("/delete/reservation/{reservationId}")
+	public @ResponseBody ResponseEntity deleteReservation(@PathVariable("reservationId") Long reservationId) {
+		
+		adminService.deleteReservation(reservationId);
+		 System.out.println(reservationId);
+		
+		return new ResponseEntity<Long>(reservationId, HttpStatus.OK);
+	}
+	
+	//고객리스트(검색 + 페이징)
+	@GetMapping(value = {"/admin/guestList", "/admin/guestList/{page}"})
+	public String guestList(Model model,SearchDto searchDto,@PathVariable("page")Optional<Integer> page){
+		
+		Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 5);
+		
+		Page<CustomerListDto> searchCustomerList = adminService.getCustomerList(searchDto,pageable);
+
+		model.addAttribute("memberList",searchCustomerList);
+		model.addAttribute("searchDto",searchDto);
+		model.addAttribute("maxPage", 5); //상품관리 페이지 하단에 보여줄 최대 페이지 번호
+		
+
+		return "admin/customerList";
+	}
+
+	
+	//문의리스트
+	@GetMapping("/admin/contactList")
+	public String contactList(Model model) {
+		
+		List<Contact> contact = adminService.getContactList();
+		model.addAttribute("contacts",contact);
+		
+		return "admin/contactList";
+
+		
+	}
 	//문의삭제
 	@DeleteMapping("/contact/delete/{contactId}")
 	public @ResponseBody ResponseEntity deleteContact(@PathVariable("contactId") Long contactId) {
@@ -250,78 +320,68 @@ public class AdminController {
 		return new ResponseEntity<Long>(contactId, HttpStatus.OK);
 		
 	}
-
-	// 고객 예약목록조회
-	@GetMapping(value = "/admin/reservationList")
-	public String reservationList(Model model) {
-		System.out.println("d111111111111111111111fdfdfdfdfd");
-
-		List<ReservationHistDto> reservationHistDtoList = adminService.getReservationList();
+	
+	//문의답변보내기
+	@PostMapping("/admin/contactMail")
+	public String contactMail(@Valid MailDto mailDto,Model model) {
+		
+		Contact contact = contactRepository.findById(mailDto.getContactId()).orElseThrow(() -> new EntityNotFoundException("contactId not found"));
 
 		
-		model.addAttribute("reservations", reservationHistDtoList);
-	
-		return "admin/reservationList";
-
-	}
-	
-	//고객리스트
-	@GetMapping(value = "/admin/guestList")
-	public String guestList(Model model) {
-		
-		List<MemberListDto> memberListDto = adminService.getMemberList();
-	
-		model.addAttribute("memberList",memberListDto);
-		
-		return "admin/guestList";
-	}
-
-	
-	//문의리스트
-	@GetMapping("/admin/contactList")
-	public String contactList(Model model) {
-		
-		List<Contact> contact = adminService.getContactList();
-
-		model.addAttribute("contacts",contact);
-		
-		return "admin/contactList";
-
-		
-	}
-	// 예약 상태 업데이트
-
-	@PostMapping("/admin/{reservationId}/updateStatus")
-	public ResponseEntity updateReservationStatus(@PathVariable("reservationId") Long reservationId,
-			@RequestParam("status") String status, Principal principal) {
-
-		// 2. 주문 상태 업데이트
-		adminService.updateReservation(reservationId, status);
-		
-		System.out.println(status);
-		System.out.println(reservationId);
-
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
-	
-	
-	// 예약 상태 (update)
-	@PostMapping(value = "/admin/{reservationId}/update2")
-	public String updateReservation(@Valid ReserveDto reserveDto, Model model) {
-
-	
-
 		try {
-			System.out.println("dfdfdfdfdfd");
-			adminService.updateReservation2(reserveDto);
-			System.out.println("d111111111111111111111fdfdfdfdfd");
+			MailSender.main(contact.getEmail(),mailDto.getTitle() , mailDto.getContent());
+			contact.setContactStatus(ContactStatus.completed);
+			contactRepository.save(contact);
+			model.addAttribute("contactMessage", "문의답변을 성공적으로 보냈습니다.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			model.addAttribute("errorMessage", "객실 수정 중 에러가 발생했습니다.");
-			return "admin/reservationList";
+			model.addAttribute("errorMessage", "메일보내기 실패");
+			return "/admin/contactList";
 		}
-
-		return "redirect:/";
+		return "redirect:/admin/contactList";
+		
 	}
+	
+	//현장예약페이지
+	@GetMapping("/admin/walkInReservationForm")
+	public String walkInReservationForm(Model model ) {
+		List<RoomTypeListDto> roomTypeListDto = adminService.getRoomTypeList();
+		
+		model.addAttribute("roomTypeList",roomTypeListDto);
+		model.addAttribute("walkInDto",new WalkInCustomerDto());
+		
+		return "/admin/walkInReservationForm";
+		
+	}
+	
+	//현장예약
+	@PostMapping("/walkInReservation")
+	public @ResponseBody ResponseEntity walkInReservation(@RequestBody @Valid WalkInCustomerDto walkInDto,BindingResult bindingResult) {
+		
+		if(bindingResult.hasErrors()) {
+			StringBuilder sb = new StringBuilder();
+			List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+			
+			for (FieldError fieldError : fieldErrors) {
+				sb.append(fieldError.getDefaultMessage()); //에러메세지를 합친다.
+			}
+			
+			return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
+		}
+		Long reservationId;
+		
+		try {
+			WalkInCustomer customer = WalkInCustomer.createWalkInCustomer(walkInDto);
+			
+			adminService.saveCustomer(customer);
+			reservationId = adminService.walkInReservation(walkInDto, customer);
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<Long>(reservationId, HttpStatus.OK); //성공시
+		
+		
+	}
+
 
 }

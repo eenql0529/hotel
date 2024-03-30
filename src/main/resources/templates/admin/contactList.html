@@ -59,10 +59,7 @@
     flex-direction: row;
     justify-content: flex-end;
 ">
-                  <form class="d-flex">
-        <input id="searchQuery" class="form-control me-sm-2" type="search" placeholder="Search">
-        <button id="searchBtn" class="my-2 my-sm-0" type="submit">Search</button>
-      </form>
+
             </div>
               <div class="table-responsive p-0">
                 <table class="table align-items-center mb-0">
@@ -105,7 +102,7 @@
                       </td>
                       <td class="align-middle text-center">
 <a th:value="${contact.id}" style="cursor:pointer;"
-								th:onclick="deleteRoomType([[${contact.id}]])" class="text-secondary text-xs font-weight-bold"><svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+								th:onclick="deleteContact([[${contact.id}]])" class="text-secondary text-xs font-weight-bold"><svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g id="Bold-Outline" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="delete" fill-rule="nonzero" fill="#a5a6a6">
             <path d="M8,4.5 L8,2.5 C8,1.94771525 8.44771525,1.5 9,1.5 L15,1.5 C15.5522847,1.5 16,1.94771525 16,2.5 L16,4.5 L20,4.5 C20.5522847,4.5 21,4.94771525 21,5.5 C21,6.05228475 20.5522847,6.5 20,6.5 L20,18.5 C20,20.709139 18.209139,22.5 16,22.5 L8,22.5 C5.790861,22.5 4,20.709139 4,18.5 L4,6.5 C3.44771525,6.5 3,6.05228475 3,5.5 C3,4.94771525 3.44771525,4.5 4,4.5 L8,4.5 Z M6,6.5 L6,18.5 C6,19.6045695 6.8954305,20.5 8,20.5 L16,20.5 C17.1045695,20.5 18,19.6045695 18,18.5 L18,6.5 L6,6.5 Z M9,9.5 C9,8.94771525 9.44771525,8.5 10,8.5 C10.5522847,8.5 11,8.94771525 11,9.5 L11,17.5 C11,18.0522847 10.5522847,18.5 10,18.5 C9.44771525,18.5 9,18.0522847 9,17.5 L9,9.5 Z M13,9.5 C13,8.94771525 13.4477153,8.5 14,8.5 C14.5522847,8.5 15,8.94771525 15,9.5 L15,17.5 C15,18.0522847 14.5522847,18.5 14,18.5 C13.4477153,18.5 13,18.0522847 13,17.5 L13,9.5 Z M10,4.5 L14,4.5 L14,3.5 L10,3.5 L10,4.5 Z" id="shape"></path>
@@ -122,14 +119,16 @@
                     <td></td>
                      <td style="
     padding: 30px;
+    max-width: 250px;
 ">
                     <!-- 여기에 상세 내용을 표시 -->
-                    <p><span th:text="${contact.content}"></span></p>
+                    <p><span style="white-space: pre-line;"th:text="${contact.content}"></span></p>
 
-                    <a th:value="${contact.id}" style="cursor:pointer;" th:onclick="deleteRoomType([[${contact.id}]])" class="text-secondary text-xs font-weight-bold">
+                    <a th:value="${contact.id}" style="cursor:pointer;" th:onclick="deleteContact([[${contact.id}]])" class="text-secondary text-xs font-weight-bold">
                         <!-- 삭제 버튼 아이콘 -->
                     </a>
-                <!-- 아코디언 내용 끝 --></td>
+                <!-- 아코디언 내용 끝 --></td> <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" th:data-bs-contact-id="${contact.id}"data-bs-whatever="@mdo">답변하기</button>
+</td>
                     </tr>
                                </tbody>
                 </table>
@@ -141,10 +140,45 @@
           </div>
         </div>
 
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form role="form" action="/admin/contactMail" method="post">
+        <input type="hidden" id="contactId" name="contactId">
+        
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">제목:</label>
+            <input type="text" class="form-control" id="title" name="title">
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">내용:</label>
+            <textarea class="form-control" id="content" name="content"></textarea>
+          </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Send message</button>
+      </div>
+                						<input type="hidden" th:name="${_csrf.parameterName}"
+							th:value="${_csrf.token}">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 </main>
 	<th:block layout:fragment="script">
+
 	<script>
-	function deleteRoomType(contactId) {
+
+	function deleteContact(contactId) {
 		const deleteConf = confirm("삭제하시겠습니까?");
 		if (!deleteConf)
 			return; //취소버튼 누르면
@@ -171,12 +205,17 @@
 
 		});
 	}
+	$('#exampleModal').on('show.bs.modal', function (event) {
+		  var button = $(event.relatedTarget); // 클릭된 버튼
+		  var contactId = button.data('bs-contact-id'); // 클릭된 버튼의 data-bs-contact-id 속성 값
+		  var modal = $(this);
+		  modal.find('.modal-body #contactId').val(contactId); // 모달의 숨겨진 입력 필드에 contactId 설정
+	});
+	
     // 상세 내용을 펼치거나 감추기 위한 함수
     function toggleAccordion(contactId) {
         // 상세 내용을 담고 있는 요소의 ID
         var accordionId = "collapse_" + contactId;
-        console.log(contactId);
-        console.log(document.getElementById(accordionId));
 
         // 해당하는 상세 내용의 요소를 가져옴
         var accordionContent = document.getElementById(accordionId);
@@ -188,6 +227,25 @@
             accordionContent.style.display = "none";
         }
     }
+    
+    
+	</script>
+		<script th:inline="javascript">
+	$(document).ready(function(){
+    	var errorMessage = [[${errorMessage}]];
+    	var contactMessage = [[${contactMessage}]];
+    	if(errorMessage != null){
+        	alert(errorMessage);
+        	console.log("errorMesssage:" + errorMessage);
+        	
+    	}
+    	if(contactMessage != null){
+        	alert(contactMessage);
+        	console.log("contactMesssage:" + contactMessage);
+        	
+    	}
+    	
+	});
 	</script>
 	</th:block>
 </html>

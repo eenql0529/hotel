@@ -2,7 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layouts/layout1}">
-	
+	<head>
+	<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 <!-- 각 페이지의 CSS가 작성될 위치 -->
 <th:block layout:fragment="css">
 	<style>
@@ -11,9 +13,59 @@
     color: tomato;
     margin-top: 5px;
 	}
+	
+	.form-control{
+	    background-color: #fdfdfd;
+    border-radius: 5px;
+    border: solid 1px #e8e8e8;
+    font-size: 15px;
+	}
+	input::placeholder {
+  color: #9E9E9E !important;
+  
+
+}
+.margin-bottom-15{
+margin-bottom:15px;
+}
+
+/* Nice Select의 드롭다운 영역에 스크롤바 추가 */
+.nice-select .list {
+    max-height: 200px; /* 스크롤바가 표시될 최대 높이 설정 */
+    overflow-y: auto; /* 수직 스크롤바 표시 */
+}
+
+/* 스크롤바 스타일 지정 */
+.nice-select .list::-webkit-scrollbar {
+    width: 10px; /* 스크롤바 너비 */
+}
+
+.nice-select .list::-webkit-scrollbar-thumb {
+    background-color: #888; /* 스크롤바 색상 */
+    border-radius: 5px; /* 스크롤바 모서리 반경 */
+}
+
+.nice-select .list::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* 스크롤바 트랙 색상 */
+}
+.nice-select > span{
+font-size:15px;
+}
+
+.hide {
+display: none;
+
+}
+.message{
+    color: #E91E63;
+    font-size: 14px;
+    margin-left: 5px;
+    margin-top: 3px;
+    font-weight: 400;
+}
 	</style>
 	</th:block>
-	
+	</head>
 <div layout:fragment="content">
  <section class="contact-section spad">
         <div class="container" style="margin-bottom: 80px;">
@@ -27,57 +79,83 @@
                 </div>
                 <div style="width: 500px;">
 
-						<form role="form" action="/members/signUp" method="post" th:object="${memberFormDto}">
+						<form role="form" action="/members/signUp" method="post" >
 							<div class="form-group row">
-								<div class="col-md-12">
-									<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-									<label th:for="name" class="text-black" style="color: #707079;">이름</label> 
+								<div class="col-md-12 margin-bottom-15">
+									
+									<label  class="text-black" style="color: #707079;">이름</label> 
 									
 									<!-- th:field => id, name 속성을 자동으로 생성해준다.  -->
-									<input type="text" class="form-control" placeholder="*이름"
-										th:field="*{name}">
-									<p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class = "fieldError">Incorrect Data</p>
+									<input type="text" class="form-control" placeholder="이름을 입력해 주세요."
+										id="name">
+									
+								</div>
+							</div>
+							<div class="form-group row">
+							<div class="col-md-12 margin-bottom-15">
+							<label class="text-black form-label">생년월일</label>
+							<div style="display: flex;flex-direction: row;">
+  <select class="box " id="birth-year">
+    <option value="null" disabled selected>출생 연도</option>
+  </select>
+  <select class="box "  id="birth-month">
+    <option value="null" disabled selected>월</option>
+  </select>
+  <select class="box " id="birth-day">
+    <option  value="null" disabled selected>일</option>
+  </select>
+  </div>
+  </div>
+							</div>
+							<div class="form-group row">
+								<div class="col-md-12 margin-bottom-15">
+									<label  class="text-black">이메일</label> <input
+										type="email" class="form-control" placeholder="이메일을 입력해 주세요."
+										id="email">
+									
+								</div>
+							</div>
+							<div class="form-group row">
+								<div class="col-md-12 margin-bottom-15">
+									<label  class="text-black">휴대폰번호</label> <input
+										type="text" class="form-control" placeholder="(-)를 제외한 숫자만 입력해주세요"
+										id="phone" oninput="oninputPhone(this)">
+									
 								</div>
 							</div>
 
 							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="email" class="text-black">이메일</label> <input
-										type="email" class="form-control" placeholder="*이메일"
-										th:field="*{email}">
-									<p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class = "fieldError">Incorrect Data</p>
-								</div>
-							</div>
-							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="phone" class="text-black">휴대폰번호</label> <input
-										type="text" class="form-control" placeholder="*휴대폰번호"
-										th:field="*{phone}">
-									<p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class = "fieldError">Incorrect Data</p>
-								</div>
-							</div>
-
-							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="password" class="text-black">비밀번호</label> <input
+								<div class="col-md-12 margin-bottom-15">
+									<label  class="text-black">비밀번호</label> <input id="password"
 										type="password" class="form-control"
-										placeholder="*비밀번호" th:field="*{password}">
-									<p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class = "fieldError">Incorrect Data</p>
+										placeholder="비밀번호를 입력해 주세요." >
+									
+								<div class="message strongPassword-message hide">*8글자 이상, 영문, 숫자, 특수문자(@$!%*#?&)를 사용하세요</div>
 								</div>
+
 							</div>
+							<div class="form-group row">
+								<div class="col-md-12 margin-bottom-15">
+									<label  class="text-black">비밀번호 확인</label> <input id="password-retype"
+										type="password" class="form-control"
+										placeholder="비밀번호를 입력해 주세요.">
+									
+								<div class="message mismatch-message hide">*비밀번호가 일치하지 않습니다</div>
+								</div>
+								</div>
 
 							<div class="form-group row">
-								<div class="col-md-12">
-									<label th:for="address" class="text-black">주소</label> <input
-										type="text" class="form-control" placeholder="주소"
-										th:field="*{address}">
+								<div class="col-md-12 margin-bottom-15">
+									<label  class="text-black">주소</label> <input
+										type="text" class="form-control" placeholder="주소를 입력해 주세요."
+										id="address">
 								</div>
 							</div>
 
 
 							<div class="form-group" style="display: flex;margin-top: 35px;">
-								<div class="col-md-12" style="display: flex;flex-direction: column;align-items: center; margin-right: 10px;">
-									<button type="submit" class="memberForm" style="width: 170px;">회원가입</button>
+								<div class="col-md-12 margin-bottom-15" style="display: flex;flex-direction: column;align-items: center; margin-right: 10px;">
+									<button type="button" th:onclick="signUp()" class="memberForm" style="width: 170px;">회원가입</button>
 								</div>
 							</div>
 							<input type="hidden" th:name="${_csrf.parameterName}"
@@ -91,13 +169,167 @@
 </div>
   <!-- 각 페이지의 스크립트가 작성될 위치 -->
 <th:block layout:fragment="script">
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		  function getLastDayOfMonth(year, month) {
+	 		    return new Date(year, month, 0).getDate();
+	 		}
+	    const birthYearEl = document.querySelector('#birth-year');
+	    const birthMonthEl = document.querySelector('#birth-month');
+	    const birthDayEl = document.querySelector('#birth-day');
+		var dt = new Date();
+		var year = dt.getFullYear();
+		var month = dt.getMonth()+1;
+		var lastDay = getLastDayOfMonth(year,month);
+
+
+
+	    for (let i = (year); i >=(year-100); i--) {
+	        const yearOption = document.createElement('option');
+	        yearOption.setAttribute('value', i);
+	        yearOption.textContent = i;
+	        birthYearEl.appendChild(yearOption);
+	    }
+	    for (let i = 1; i <= 12; i++) {
+	        const monthOption = document.createElement('option');
+	       monthOption.setAttribute('value', i);
+	      monthOption.textContent = i;
+	        birthMonthEl.appendChild(monthOption);
+	    }
+	    for (let i = 1; i <= 31; i++) {
+	        const dayOption = document.createElement('option');
+	       dayOption.setAttribute('value', i);
+	      dayOption.textContent = i;
+	        birthDayEl.appendChild(dayOption);
+	    }
+	    
+	 
+	   console.log(getLastDayOfMonth(2024,2));
+	// Nice Select 요소를 갱신하여 변경 사항을 반영
+	   $('#birth-year').niceSelect('update');
+	   $('#birth-month').niceSelect('update');
+	   $('#birth-day').niceSelect('update');
+	    
+	}); 	
+	
+
+
+
+</script>
 	<script th:inline="javascript">
-		//회원가입이 실패했을때 에러메세지를 보여줌 
-		var errorMessage = [[${errorMessage}]];
-		
-		if(errorMessage != null){
-			alert(errorMessage);
-		}
+
+
+	//회원가입이 실패했을때 에러메세지를 보여줌 
+	var errorMessage = [[${errorMessage}]];
+	
+	if(errorMessage != null){
+		alert(errorMessage);
+	}
+    function oninputPhone(target) {
+        target.value = target.value
+            .replace(/[^0-9]/g, '')
+            .replace(/(^02.{0}|^01.{1}|[0-9]{3,4})([0-9]{3,4})([0-9]{4})/g, "$1-$2-$3");
+    }
+    
+	 // 1. 비밀번호 입력창 정보 가져오기
+	    let elInputPassword = document.querySelector('#password'); // input#password
+	    // 2. 비밀번호 확인 입력창 정보 가져오기
+	    let elInputPasswordRetype = document.querySelector('#password-retype'); // input#password-retype
+	    // 3. 실패 메시지 정보 가져오기 (비밀번호 불일치)
+	    let elMismatchMessage = document.querySelector('.mismatch-message'); // div.mismatch-message.hide
+	    // 4. 실패 메시지 정보 가져오기 (8글자 이상, 영문, 숫자, 특수문자 미사용)
+	    let elStrongPasswordMessage = document.querySelector('.strongPassword-message'); // div.strongPassword-message.hide
+	
+	    function strongPassword (str) {
+	    	  return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(str);
+	    	}
+	    function isMatch (password1, password2) {
+	    	  return password1 === password2;
+	    	}
+	    elInputPassword.onkeyup = function () {
+
+	    	  // console.log(elInputPassword.value);
+	    	  // 값을 입력한 경우
+	    	  if (elInputPassword.value.length !== 0) {
+	    	    if(strongPassword(elInputPassword.value)) {
+	    	      elStrongPasswordMessage.classList.add('hide'); // 실패 메시지가 가려져야 함
+	    	    }
+	    	    else {
+	    	      elStrongPasswordMessage.classList.remove('hide'); // 실패 메시지가 보여야 함
+	    	    }
+	    	  }
+	    	  // 값을 입력하지 않은 경우 (지웠을 때)
+	    	  // 모든 메시지를 가린다.
+	    	  else {
+	    	    elStrongPasswordMessage.classList.add('hide');
+	    	  }
+	    	};
+	    	
+	    	elInputPasswordRetype.onkeyup = function () {
+
+	    		  // console.log(elInputPasswordRetype.value);
+	    		  if (elInputPasswordRetype.value.length !== 0) {
+	    		    if(isMatch(elInputPassword.value, elInputPasswordRetype.value)) {
+	    		      elMismatchMessage.classList.add('hide'); // 실패 메시지가 가려져야 함
+	    		    }
+	    		    else {
+	    		      elMismatchMessage.classList.remove('hide'); // 실패 메시지가 보여야 함
+	    		    }
+	    		  }
+	    		  else {
+	    		    elMismatchMessage.classList.add('hide'); // 실패 메시지가 가려져야 함
+	    		  }
+	    		};
+
+	    		function signUp() {
+	    			var token = $("meta[name='_csrf']").attr("content");
+	    			var header = $("meta[name='_csrf_header']").attr("content");
+
+	    			var url = "/members/signUp";
+
+	    			//controller(서버)에 전달할 데이터
+	    			var paramData = {
+	   					password : $("#password").val(),
+	    				email : $("#email").val(),
+	    				address : $("#address").val(),
+	    				phone : $("#phone").val(),
+	    				name : $("#name").val(),
+	    				birth : $("#birth-year").val()+"-"+("0" + $("#birth-month").val()).slice(-2) + "-" + ("0" + $("#birth-day").val()).slice(-2)
+	    			}
+
+
+	    			//★전달하기 전에 데이터를 반드시 JSON -> 문자열로 만들어야 한다.
+	    			var param = JSON.stringify(paramData);
+	    			
+	    			$.ajax({
+	    				url : url, //request URL
+	    				type : "POST", //전송방식
+	    				contentType : "application/json",
+	    				data : param, //서버에 전송할 데이터
+	    				beforeSend : function(xhr) {
+	    					//데이터를 전송하기전에 헤더에 csrf 값을 설정
+	    					xhr.setRequestHeader(header, token);
+	    				},
+	    				dataType : "json",
+	    				cache : false,
+	    				success : function(result, status) {
+	    					alert("회원가입이 완료되었습니다.");
+	    					location.href = '/members/login';
+	    				},
+	    				error : function(jqXHR, status, error) {
+	    					if (jqXHR.status == '400') {
+	    						//에러메세지 출력(ResponseEntity에서 받아온 값을 출력해준다)
+	    						alert(jqXHR.responseText);
+	    					} else {
+	    						//에러메세지 출력(ResponseEntity에서 받아온 값을 출력해준다)
+	    						alert(jqXHR.responseText);
+	    					}
+	    				}
+	    			});
+
+	    		}
+
 	</script>
 </th:block>	
 </html>

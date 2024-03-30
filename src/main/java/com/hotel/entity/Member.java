@@ -22,7 +22,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class Member {
+public class Member extends BaseEntity {
 	
 	@Id
 	@Column(name="member_id") //테이블로 생성될때 컬럼이름을 지정해준다
@@ -44,6 +44,9 @@ public class Member {
 	@Column(nullable = true)
 	private String address;
 	
+	@Column(nullable = false)
+	private String birth;
+	
 	@Enumerated(EnumType.STRING)
 	private Role role;
 	
@@ -56,6 +59,7 @@ public class Member {
 		member.setAddress(memberFormDto.getAddress());
 		member.setPassword(password);
 		member.setPhone(memberFormDto.getPhone());
+		member.setBirth(memberFormDto.getBirth());
 		member.setRole(Role.ADMIN);
 		
 		return member;

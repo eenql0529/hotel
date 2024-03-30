@@ -25,10 +25,10 @@ public class MemberService implements UserDetailsService {
 	private final ContactRepository contactRepository;
 	
 	//회원가입 데이터를 DB에 저장한다
-	public Member saveMember(Member member) {
+	public Long saveMember(Member member) {
 		validateDuplicateMember(member); //이메일 중복체크
 		Member savedMember = memberRepository.save(member);
-		return savedMember;
+		return savedMember.getId();
 		
 	}
 	

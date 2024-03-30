@@ -10,11 +10,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
 import com.hotel.Exception.OutOfStockException;
+import com.hotel.constant.ReservationStatus;
 import com.hotel.dto.ReservationHistDto;
 import com.hotel.dto.ReserveDto;
 import com.hotel.entity.Inventory;
@@ -73,7 +75,7 @@ public class ReservationService {
             startDate = LocalDate.parse(reserveDto.getCheckIn());
             endDate = LocalDate.parse(reserveDto.getCheckOut());
 
-            while (!startDate.isAfter(endDate)) {
+            while (!startDate.isAfter(endDate.minusDays(1))) {
                 Inventory inventory = inventoryRepository.findByDateAndRoomType(startDate.toString(), roomType);
                 if (inventory != null && inventory.getStock() > 0) {
                     inventory.setStock(inventory.getStock() - 1); // 재고 감소
@@ -121,6 +123,7 @@ public class ReservationService {
 			Member member = reservation.getMember();
 
 			ReservationHistDto reservationHistDto = new ReservationHistDto(reservation, typeId,member);
+			
 			RoomType roomType = reservationHistDto.getTypeId();
 			
 			for (Reservation reserve : reservations) {
@@ -205,6 +208,23 @@ public class ReservationService {
 	        // 복원 중 오류 발생 시 롤백 처리 등 예외 처리 필요
 	        throw e;
 	    }
+		
+	}
+	
+	//예약상태변경
+	@Transactional
+	@Scheduled(cron = "0 0 * * * *") // 매 시간 0분에 실행
+	public void updateReservationStatus() {
+		List<Reservation> checkInReservations = reserveRepository.updateCheckIn();
+		List<Reservation> checkOutReservations = reserveRepository.updateCheckOut();
+		
+		for(Reservation reservation : checkInReservations) {
+			
+			reservation.setRsStatus(ReservationStatus.CHECK_IN);
+		}
+		for(Reservation reservation  : checkOutReservations) {
+			reservation.setRsStatus(ReservationStatus.CHECK_OUT);
+		}
 		
 	}
 	

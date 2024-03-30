@@ -41,8 +41,13 @@
 	color:#E0BD04 !important;
 	font-weight: bold !important;
 	}
-
-	
+#ui-datepicker-div{
+z-index:2 !important;
+}
+	.nice-select{
+border: 0;
+height: 100%;
+}
 	</style>
 
 </th:block>
@@ -59,7 +64,7 @@
                 <h6 class="text-white text-capitalize ps-3">예약현황</h6>
               </div>
             </div>
-            <div class="card-body px-0 pb-2">
+            <div class="card-body px-0 pb-2" style="padding:0px;">
 
             
             <div style="
@@ -67,10 +72,34 @@
     flex-direction: row;
     justify-content: flex-end;
 ">
-                  <form class="d-flex">
-        <input id="searchQuery" class="form-control me-sm-2" type="search" placeholder="Search">
-        <button id="searchBtn" class="my-2 my-sm-0" type="submit">Search</button>
-      </form>
+					<form th:object="${searchDto}" class="d-flex"
+						th:action="@{'/admin/reservationList/' + ${reservations.number}}"
+						method="get" id="searchFoam" name="search-form" style="
+    margin: 8px 6px 6px;display: flex !important;
+    flex-direction: row;
+    justify-content: space-between;
+    
+    
+">	    
+    <div style="
+    display: flex;
+">
+						<select th:field="*{searchType}" id="searchType" >
+							<option disabled selected value="null">검색 유형</option>
+							<option value="name">이름</option>
+							<option value="check_in" id="check_in">체크인</option>
+							<option value="check_out" id="check_out">체크아웃</option>
+
+						</select> 
+						<input th:field="*{keyword}" id="keyword" class="date-input form-control me-sm-1" type="search" placeholder="Search" style="height: 100%;">
+						<button id="searchBtn" class="my-2 my-sm-0 btn btn-outline-primary" type="submit"style="
+    height: 100%;
+    padding: 0;
+    width: 100px;
+    font-size: 14px;
+">검색</button>
+</div>
+					</form>
             </div>
               <div class="table-responsive p-0">
                 <table class="table align-items-center mb-0">
@@ -83,19 +112,19 @@
                       <th class="text-center text-uppercase text-secondary font-weight-bolder opacity-7">체크아웃</th>
                       <th class="text-center text-uppercase text-secondary font-weight-bolder opacity-7">객실</th>
                       <th class="text-center text-uppercase text-secondary font-weight-bolder opacity-7">요금</th>
-                      <th class="text-center text-uppercase text-secondary font-weight-bolder opacity-7"style="
-    width: 175px;
-">상태</th>
+                      <th class="text-center text-uppercase text-secondary font-weight-bolder opacity-7">상태</th>
+                    <th></th>
                     </tr>
                   </thead>
                   <tbody >
-                    <tr th:each="reservation, status: ${reservations}">
+                    <tr th:each="reservation, status: ${reservations.getContent()}">
                       <td  style="padding:12px 24px;">
 <p th:text="${reservation.reservationId}"class="text-xs text-secondary mb-0"></p>
                       </td>
                       <td>
-                        <p th:text="${reservation.member.name}"class="text-xs font-weight-bold mb-0"></p>
-                        <p th:text="${reservation.member.phone}"class="text-xs text-secondary mb-0"></p>
+                        <p th:text="${reservation.name}"class="text-xs font-weight-bold mb-0"></p>
+                        
+                        <p th:text="${reservation.phone}"class="text-xs text-secondary mb-0"></p>
                       </td>
                       <td class="align-middle text-center text-sm">
                                                 <p th:utext="${reservation.reserveDate.replace(' ', '<br>')}"class="text-xs font-weight-bold mb-0"></p>
@@ -107,8 +136,8 @@
 <p th:utext="${reservation.checkOut.replace(' ', '<br>')}"class="text-xs text-secondary mb-0"></p>
                       </td>
                       <td class="align-middle text-center">
-<p class="text-xs text-secondary mb-0">[[${reservation.typeId.typeName}]]
-					([[${reservation.guest}]]명)<br>*[[${reservation.typeId.view}]]</p>
+<p class="text-xs text-secondary mb-0">[[${reservation.typeName}]]
+					([[${reservation.guest}]]명)<br>*[[${reservation.view}]]</p>
                       </td>
                       <td class="align-middle text-center">
 <p class="text-xs text-secondary mb-0">₩[[${#numbers.formatInteger(reservation.totalPrice,0,
@@ -140,13 +169,50 @@
 >
         [[${reservation.status}]]
     </p>
+   
+</td>
+<td class="align-middle text-center"> <a th:value="${reservation.reservationId}"
+								th:onclick="deleteReservation([[${reservation.reservationId}]])"><svg style="
+    width: 13px; cursor: pointer;
+"xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ff0059" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></a>
 </td>
 
 
                     </tr>
                   </tbody>
                 </table>
-                
+                					<nav class="pagination pagination-primary pagination-sm" style="margin-top: 26px;display: flex;justify-content: center;"
+						th:with="start=${(reservations.number/maxPage)*maxPage + 1}
+			                 ,end=(${(reservations.totalPages == 0) ? 1 : (start + (maxPage - 1) < reservations.totalPages ? start + (maxPage - 1) : reservations.totalPages)})"
+						aria-label="Page navigation example">
+						<ul class="pagination d-flex justify-content-center">
+							<li class="page-item" 
+								th:classappend="${reservations.first}?'disabled'"><a
+								class="page-link"
+								th:onclick="'javascript:page(' + ${reservations.number - 1} +')'">        <span class="material-icons">
+          keyboard_arrow_left
+        </span>
+        <span class="sr-only">Previous</span></a>
+							</li>
+
+							<li class="page-item" style="cursor: pointer;"
+								th:each="page: ${#numbers.sequence(start, end)}"
+								th:classappend="${reservations.number eq page-1}?'active':''">
+								<a class="page-link" th:inline="text"
+								th:onclick="'javascript:page(' + ${page - 1} +')'">[[${page}]]</a>
+							</li>
+
+							<li class="page-item"
+								th:classappend="${reservations.last}?'disabled'"><a
+								class="page-link"
+								th:onclick="'javascript:page(' + ${reservations.number + 1} +')'"><span class="material-icons">
+          keyboard_arrow_right
+        </span>
+        <span class="sr-only">Next</span></a>
+							</li>
+						</ul>
+					</nav>
+                 
               </div>
               
 
@@ -155,14 +221,74 @@
         </div>
 </main>
 	<th:block layout:fragment="script">
+	
+	<script src="/js/ckeditor.js"></script>
 	<script>
-/* 	function deleteRoomType(typeId) {
-		const deleteConf = confirm("객실을 삭제하시겠습니까?");
+
+	$(document).ready(function() {
+
+
+		// 검색 유형 변경 이벤트 핸들러
+		 $("#searchType").change(function() {
+
+		        // 선택된 검색 유형 값 가져오기
+		        var selectedOption = $(this).val();
+	    changeSelectedOption(selectedOption);
+		 });
+
+	});
+		 
+ 	function changeSelectedOption(selectedOption){
+		
+	        // 체크인 또는 체크아웃이 선택된 경우
+	        if (selectedOption === "check_in" || selectedOption === "check_out") {
+	     		// 기존 DatePicker를 제거
+	   		 $("#keyword").datepicker("destroy");
+	    	    // DatePicker를 초기화
+	    	    $("#keyword").datepicker({
+	    	        dateFormat: "yy-mm-dd", // 원하는 날짜 형식으로 변경
+	    	        showOtherMonths: true, // 첫날과 끝날의 앞뒤월의 날짜를 표시
+	    	        showMonthAfterYear: true, // 년도 먼저 나오고, 뒤에 월 표시
+	    	        changeYear: true, // 콤보박스에서 년 ,월 선택가능
+	    	        changeMonth: true,
+	    	        closeText: '닫기',
+	    	        dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'], // 달력의 요일 부분 텍스트
+	    	        monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+	    	        onSelect: function(dateText, inst) {
+	    	        	console.log(dateText);
+	    	        	$("#keyword").val(dateText);
+	    	            // 날짜가 선택될 때 아무 작업도 수행하지 않음
+	    	        }
+	    	    });
+	        } else {
+	        	 $("#keyword").datepicker("destroy");
+	        }
+	}
+	
+	//페이징버튼 눌렀을때 혹은 검색버튼 눌렀을때 검색어와 selectbox를 get방식으로 주소이동시켜준다.
+function page(page) {
+		
+    // 입력한 값을 전부 가지고 온다.
+    var searchType = $("#searchType").val();
+    var keyword = $("#keyword").val();
+
+    // 주소 이동
+    var url = "/admin/reservationList/" + page; 
+
+    if (searchType && keyword) {
+        url += "?searchType=" + searchType + "&keyword=" + keyword;
+    }
+
+    location.href = url;
+}
+
+ 	function deleteReservation(reservationId) {
+		const deleteConf = confirm("예약을 삭제하시겠습니까?");
 		if (!deleteConf)
 			return; //취소버튼 누르면
 
 		//request URL
-		var url = "/room/delete/" + typeId;
+		var url = "/delete/reservation/" + reservationId;
 
 		var token = $("meta[name='_csrf']").attr("content");
 		var header = $("meta[name='_csrf_header']").attr("content");
@@ -178,12 +304,12 @@
 			dataType : "json",
 			cache : false,
 			success : function(result, status) {
-				location.href = '/admin/roomtypeList';
+				location.href = '/admin/reservationList';
 			}
 
 		});
 	}
- */
+ 
 	</script>
 	</th:block>
 </html>

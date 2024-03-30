@@ -11,6 +11,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.hotel.dto.ContactDto;
@@ -69,28 +71,28 @@ public class MemberController {
 	}
 	
 	//회원가입
-	@PostMapping(value="/members/signUp")
-	public String signUp(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model) {
+	@PostMapping("/members/signUp")
+	public @ResponseBody ResponseEntity signUp(@RequestBody @Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model) {
 		//@Valid: 유효성을 검증하려는 객체 앞에 붙인다.
 		//BindingResult: 유효성 검증 후의 결과가 들어있다.
 		
-		if(bindingResult.hasErrors()) {
-			//에러가 있다면 회원가입 페이지로 이동
-			return "member/signUpForm";			
+	    if (bindingResult.hasErrors()) {
+	        FieldError firstError = bindingResult.getFieldErrors().get(0); // 첫 번째 에러 메시지만 가져옴
+			
+			return new ResponseEntity<String>(firstError.getDefaultMessage(), HttpStatus.BAD_REQUEST);
 		}
-		
+		Long memberId;
 		
 		try {		
 			//MemberFormDto -> Member Entity, 비밀번호 암호화
 		Member member = Member.createMember(memberFormDto, passwordEncoder);
-		memberService.saveMember(member);
+		memberId=memberService.saveMember(member);
 			
 		} catch (Exception e) {
-			model.addAttribute("errorMessage", e.getMessage());
-			return "member/signUpForm";
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 		
-		return "redirect:/";
+		return new ResponseEntity<Long>(memberId,HttpStatus.OK); //성공시
 
 	}
 	

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.hotel.Exception.OutOfStockException;
@@ -30,6 +31,8 @@ public class AdminService {
 	private final InventoryRepository inventoryRepository;
 	private final MemberRepository memberRepository;
 	private final ContactRepository contactRepository;
+	private final WalkInCustomerRepository walkInCustomerRepository;
+	private final Reservation reserve;
 	
 	//item 테이블에 상품등록(insert)
 	public Long saveRoom(RoomFormDto roomFormDto, List<MultipartFile> roomImgFileList) throws Exception {
@@ -93,6 +96,14 @@ public class AdminService {
 		roomRepository.delete(roomType);
 	}
 	
+	//예약삭제
+	public void deleteReservation(Long reservationId) {
+		Reservation reservation = reserveRepository.findById(reservationId)
+					.orElseThrow(EntityNotFoundException::new);
+		
+		reserveRepository.delete(reservation);
+	}
+	
 	//문의삭제
 	public void deleteContact(Long contactId) {
 		
@@ -103,7 +114,80 @@ public class AdminService {
 	}
 	
 	
+	//현장예약
+	@Transactional
+	public Long walkInReservation(WalkInCustomerDto walkInCustomerDto, WalkInCustomer walkInCustomer) {
+		
+		RoomType roomType = roomRepository.findById(walkInCustomerDto.getTypeId())
+											.orElseThrow(EntityNotFoundException::new);
+		
+		
+		LocalDate startDate = LocalDate.parse(walkInCustomerDto.getCheckIn());
+        LocalDate endDate = LocalDate.parse(walkInCustomerDto.getCheckOut());
+
+        long daysBetween = endDate.toEpochDay() - startDate.toEpochDay(); //두 날짜 차이 구하기.
+        
+        walkInCustomerDto.setCount(daysBetween);
+        
+        // 여기서 트랜잭션 시작
+        Reservation reservation = null;
+        try {
+            reservation = reserve.createReserve(walkInCustomer, roomType, walkInCustomerDto);
+            reserveRepository.save(reservation);
+            System.out.println("reservation:" + reservation.getCheckIn());
+            startDate = LocalDate.parse(walkInCustomerDto.getCheckIn());
+            endDate = LocalDate.parse(walkInCustomerDto.getCheckOut());
+
+            while (!startDate.isAfter(endDate)) {
+                Inventory inventory = inventoryRepository.findByDateAndRoomType(startDate.toString(), roomType);
+                if (inventory != null && inventory.getStock() > 0) {
+                    inventory.setStock(inventory.getStock() - 1); // 재고 감소
+                    inventoryRepository.save(inventory);
+                } else if(inventory == null) {
+                	inventory = new Inventory(); // 새로운 Inventory 객체 생성
+                	inventory.setDate(startDate.toString());
+                	inventory.setRoomType(roomType);
+                    inventory.setStock(inventory.getStock() - 1); // 재고 감소
+                    inventoryRepository.save(inventory);
+                }
+                else {
+                    throw new OutOfStockException("재고가 부족합니다.");
+                }
+
+                startDate = startDate.plusDays(1);
+            }
+
+            // 예약 및 재고 업데이트가 모두 성공하면 커밋됨
+        } catch (Exception e) {
+            // 예약 또는 재고 업데이트 중 하나라도 실패하면 롤백
+            if (reservation != null) {
+                reserveRepository.delete(reservation);
+            }
+            throw e; // 예외 다시 던짐
+        }
+
+        return reservation.getId();
+		
+		
+		
+		
+	}
 	
+	
+	//현장예약 고객 추가
+	public WalkInCustomer saveCustomer(WalkInCustomer walkInCustomer) {
+		
+		//이미 이용한적있는 고객은 추가 x
+		WalkInCustomer findCustomer = walkInCustomerRepository.findByNameAndBirth(walkInCustomer.getName(), walkInCustomer.getBirth());
+		
+		if(findCustomer == null) {
+			findCustomer = walkInCustomerRepository.save(walkInCustomer);
+			
+		}
+		return findCustomer;
+	}
+	
+
 	
 	@Transactional(readOnly = true)
 	public List<RoomTypeListDto> getRoomTypeList(){
@@ -123,44 +207,43 @@ public class AdminService {
 	
 	//예약목록 관리 
 	@Transactional(readOnly = true)
-	public List<ReservationHistDto> getReservationList(){
-		List<Reservation> reservations = reserveRepository.getReservations();
+	public Page<ReservationHistDto> getReservationList(SearchDto searchDto, Pageable pageable){
 		
-		List<ReservationHistDto> reservationHistDtos = new ArrayList<>();
+		Page<ReservationHistDto> reservationHistDtos = reserveRepository.getAdminReservationPage(searchDto, pageable);
 		
-		for(Reservation reservation : reservations) {
-			
-			RoomType typeId = reservation.getTypeId();
-			
-			Member member = reservation.getMember();
-			
-			
-			ReservationHistDto reservationHistDto = new ReservationHistDto(reservation, typeId,member);
-			RoomType roomType = reservationHistDto.getTypeId();
-			
-			reservationHistDtos.add(reservationHistDto);
-			
-		}
 		
 		return reservationHistDtos;
 	}
 	
-	//고객리스트 관리
+
+
 	@Transactional(readOnly = true)
-	public List<MemberListDto> getMemberList(){
-		List<Member> members = memberRepository.getMemberList();
-		List<MemberListDto> memberListDtos = new ArrayList<>();
+	public Page<CustomerListDto> getCustomerList(SearchDto searchDto, Pageable pageable){
 		
-		for(Member member : members) {
-			MemberListDto memberListDto = new MemberListDto(member);
-			memberListDto.setCount(reserveRepository.countHotelService(member.getId()));
-			memberListDtos.add(memberListDto);
-			
-		}
-		
-		return memberListDtos;
-		
+		Page<CustomerListDto> customerList = memberRepository.getAdminMemberPage(searchDto,pageable);
+
+	    // 페이지별 고객 목록에 대해 이용횟수 구하기
+	    getCount(customerList.getContent());
+	    
+		return customerList;
 	}
+	
+	// 고객 이용횟수 구하기
+	@Transactional(readOnly = true)
+	private void getCount(List<CustomerListDto> customerList) {
+	    for (CustomerListDto customer : customerList) {
+	        if ("member".equals(customer.getCustomerType())) {
+	            Long customerId = customer.getCustomerId();
+	            int count = reserveRepository.countHotelServiceMember(customerId);
+	            customer.setCount(count);
+	        } else if ("walk_in_customer".equals(customer.getCustomerType())) {
+	            Long customerId = customer.getCustomerId();
+	            int count = reserveRepository.countHotelServiceCustomer(customerId);
+	            customer.setCount(count);
+	        }
+	    }
+	}
+
 	
 	//예약 업데이트
 	public void updateReservation(Long reservationId,String status) {

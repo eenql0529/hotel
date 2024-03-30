@@ -214,37 +214,6 @@
 		        }
 		    });
 		
-   
-    
-    var ctx = document.getElementById("chart-bars").getContext("2d");
-
-    new Chart(ctx, {
-      type: "doughnut",
-      data: {
-    	  labels: ["예상 거래액","결제대기금액"],
-        datasets: [{
-          tension: 0.4,
-          borderWidth: 0,
-          borderRadius: 4,
-          borderSkipped: false,
-          backgroundColor: ["rgba(255, 255, 255, .8)",'rgb(54, 162, 235)'],
-          data: [30000,5000],  // 예상 거래액 값
-          maxBarThickness: 6
-        }, ],
-      },
-      options: {
-    	  cutout: '75%',
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          }
-        },
-
-
-      },
-    });
 
 
 

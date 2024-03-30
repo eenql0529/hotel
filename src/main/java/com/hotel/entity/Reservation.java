@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.hotel.constant.ReservationStatus;
 import com.hotel.dto.ReserveDto;
+import com.hotel.dto.WalkInCustomerDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -63,6 +64,11 @@ public class Reservation extends BaseEntity {
 	private Member member;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "walk_in_customer_id")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private WalkInCustomer walkInCustomer;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="type_id")
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private RoomType typeId;
@@ -88,6 +94,24 @@ public class Reservation extends BaseEntity {
 		return reservation;
 	}
 	
+	public Reservation createReserve(WalkInCustomer walkInCustomer,RoomType roomType, WalkInCustomerDto walkInCustomerDto) {
+		Reservation reservation = new Reservation();
+		reservation.setWalkInCustomer(walkInCustomer);
+		reservation.setCheckIn(walkInCustomerDto.getCheckIn());
+		reservation.setCheckOut(walkInCustomerDto.getCheckOut());
+		reservation.setTypeId(roomType);
+		reservation.setCount(walkInCustomerDto.getCount());
+		reservation.setGuest(walkInCustomerDto.getGuest());
+		reservation.setTotalPrice(roomType.getPrice()*walkInCustomerDto.getCount());
+		reservation.setRsStatus(ReservationStatus.RESERVATION);
+		reservation.setReserveDate(LocalDateTime.now());
+		
+		
+		
+		
+		return reservation;
+	}
+	
 
 	
 
@@ -101,19 +125,5 @@ public class Reservation extends BaseEntity {
 		
 	}
 	
-//	//예약 업데이트
-//	public void updateReservation(ReservationStatus rsStatus) {
-//		this.rsStatus = rsStatus;
-//		if(rsStatus == rsStatus.DELETED) {
-//
-//		}
-//	}
-//	//예약 업데이트
-//	public void updateReservation2(ReserveDto reserveDto) {
-//		this.rsStatus = reserveDto.getRsStatus();
-//		if(rsStatus == rsStatus.DELETED) {
-//
-//		}
-//	}
-	
+
 }
