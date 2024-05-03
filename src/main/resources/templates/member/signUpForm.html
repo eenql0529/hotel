@@ -257,6 +257,7 @@ display: none;
 	    	    }
 	    	    else {
 	    	      elStrongPasswordMessage.classList.remove('hide'); // 실패 메시지가 보여야 함
+
 	    	    }
 	    	  }
 	    	  // 값을 입력하지 않은 경우 (지웠을 때)
@@ -291,6 +292,7 @@ display: none;
 	    			//controller(서버)에 전달할 데이터
 	    			var paramData = {
 	   					password : $("#password").val(),
+	   					passwordRetype : $("#password-retype").val(),
 	    				email : $("#email").val(),
 	    				address : $("#address").val(),
 	    				phone : $("#phone").val(),
